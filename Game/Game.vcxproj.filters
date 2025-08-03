@@ -110,5 +110,8 @@
     <ClInclude Include="MapMaker\MonsterElite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\AStarPathfinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

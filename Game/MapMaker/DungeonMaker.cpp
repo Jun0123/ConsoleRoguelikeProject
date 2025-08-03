@@ -1,4 +1,4 @@
-#include "DungeonMaker.h"
+ï»¿#include "DungeonMaker.h"
 #include "Utils/Utils.h"
 #include "MonsterRoom.h"
 #include "MonsterElite.h"
@@ -22,12 +22,12 @@
 #define PLAYER_ROOMTYPE_COUNT 1
 
 /*
-	Todo : ¸Ê»ı¼º
-	1. ¹æ¸¸µé±â v
-	2. ±æ¸¸µé±â v
-	3. º®¸¸µé±â
-	3. ¸Ê¿¡ °ü·ÃµÈ ¿ÀºêÁ§Æ®·Î º¯È¯ÇÏ±â
-	4. ·£´ıÀ¸·Î ¾ÆÀÌÅÛ, Àû ½ºÆù ÇÏ±â
+	Todo : ë§µìƒì„±
+	1. ë°©ë§Œë“¤ê¸° v
+	2. ê¸¸ë§Œë“¤ê¸° v
+	3. ë²½ë§Œë“¤ê¸°
+	3. ë§µì— ê´€ë ¨ëœ ì˜¤ë¸Œì íŠ¸ë¡œ ë³€í™˜í•˜ê¸°
+	4. ëœë¤ìœ¼ë¡œ ì•„ì´í…œ, ì  ìŠ¤í° í•˜ê¸°
 */
 
 DungeonMaker::DungeonMaker(int inMapWidth, int inMapHeight, float inMinRatio, float inMaxRatio, int inMaxDepth)
@@ -36,8 +36,8 @@ DungeonMaker::DungeonMaker(int inMapWidth, int inMapHeight, float inMinRatio, fl
 	map = new int[mapHeight * mapWidth];
 	memset(map, 0, sizeof(int) * mapHeight * mapWidth);
 
-	// maxDepth·Î ¹æÀÌ ¸î°³ ¸¸µé¾îÁö´ÂÁö °è»ê
-	// ¹æ °³¼ö¸¸Å­ ¹æ Å¸ÀÔ ÁöÁ¤ ¹× ·£´ı Á¤·Ä
+	// maxDepthë¡œ ë°©ì´ ëª‡ê°œ ë§Œë“¤ì–´ì§€ëŠ”ì§€ ê³„ì‚°
+	// ë°© ê°œìˆ˜ë§Œí¼ ë°© íƒ€ì… ì§€ì • ë° ëœë¤ ì •ë ¬
 	SetRandomRoomType(static_cast<int>(std::pow(2, maxDepth)));
 
 	rootNode = new RoomNode(Vector2(MAPBASEPOINTX, MAPBASEPOINTY), inMapWidth, inMapHeight, 0.0f);
@@ -65,24 +65,24 @@ DungeonMaker::~DungeonMaker()
 
 void DungeonMaker::DivideMap(RoomNode* node, int depth)
 {
-	// Á¦ÀÏ ±íÀº ³ëµå¿¡¼­ ¹æ¸¸µé±â
+	// ì œì¼ ê¹Šì€ ë…¸ë“œì—ì„œ ë°©ë§Œë“¤ê¸°
 	if (depth >= maxDepth)
 	{
 		MakeRoom(node);
 		return;
 	}
 
-	// ÃÖ´ë ±æÀÌ¸¦ ±¸ÇØ¼­ ³ª´­ ±âÁØÀ» Á¤ÇÑ´Ù.
+	// ìµœëŒ€ ê¸¸ì´ë¥¼ êµ¬í•´ì„œ ë‚˜ëˆŒ ê¸°ì¤€ì„ ì •í•œë‹¤.
 	int maxLen = node->GetWidth() > node->GetHeight() ? node->GetWidth() : node->GetHeight();
 	int split = static_cast<int>(Utils::RandomFloat(maxLen * minRatio, maxLen * maxRatio));
 
 
-	// ³Êºñ°¡ ³ôÀÌº¸´Ù °ªÀÌ Å©´Ù¸é ÁÂ/¿ì·Î ºĞÇÒÇÑ´Ù.
+	// ë„ˆë¹„ê°€ ë†’ì´ë³´ë‹¤ ê°’ì´ í¬ë‹¤ë©´ ì¢Œ/ìš°ë¡œ ë¶„í• í•œë‹¤.
 	if (node->GetWidth() > node->GetHeight())
 	{
 		if (depth == maxDepth - 1)
 		{
-			// Depth°¡ Á¦ÀÏ ³ôÀº ³ëµå¿¡¼­ ¹æ Å¸ÀÔ¿¡ ¸ÂÃç¼­ ¹æ»ı¼º
+			// Depthê°€ ì œì¼ ë†’ì€ ë…¸ë“œì—ì„œ ë°© íƒ€ì…ì— ë§ì¶°ì„œ ë°©ìƒì„±
 			MakeRoomTypeLeftNode(node, Vector2(node->GetPosition().x, node->GetPosition().y), split, node->GetHeight(), 1 - static_cast<float>(split) / maxLen);
 			MakeRoomTypeRightNode(node,Vector2(node->GetPosition().x + split, node->GetPosition().y), node->GetWidth() - split, node->GetHeight(), 1 - static_cast<float>(split) / maxLen);
 		}
@@ -95,16 +95,16 @@ void DungeonMaker::DivideMap(RoomNode* node, int depth)
 
 		for (int y = node->GetPosition().y; y < node->GetPosition().y + node->GetHeight(); ++y)
 		{
-			// 1Â÷¿ø ¹è¿­  ->  2Â÷¿ø ¹è¿­ ÀÎµ¦½º ±¸ÇÏ±â  (¼¼·Î ÁÂÇ¥ * mapWidth) + °¡·Î ÁÂÇ¥
+			// 1ì°¨ì› ë°°ì—´  ->  2ì°¨ì› ë°°ì—´ ì¸ë±ìŠ¤ êµ¬í•˜ê¸°  (ì„¸ë¡œ ì¢Œí‘œ * mapWidth) + ê°€ë¡œ ì¢Œí‘œ
 			map[y * mapWidth + node->rightNode->GetPosition().x] = 1;
 		}
 	}
-	// ³ôÀÌ°¡ ³Êºñº¸´Ù °ªÀÌ Å©´Ù¸é À§/¾Æ·¡·Î ºĞÇÒÇÑ´Ù.
+	// ë†’ì´ê°€ ë„ˆë¹„ë³´ë‹¤ ê°’ì´ í¬ë‹¤ë©´ ìœ„/ì•„ë˜ë¡œ ë¶„í• í•œë‹¤.
 	else
 	{
 		if (depth == maxDepth - 1)
 		{
-			// Depth°¡ Á¦ÀÏ ³ôÀº ³ëµå¿¡¼­ ¹æ Å¸ÀÔ¿¡ ¸ÂÃç¼­ ¹æ»ı¼º
+			// Depthê°€ ì œì¼ ë†’ì€ ë…¸ë“œì—ì„œ ë°© íƒ€ì…ì— ë§ì¶°ì„œ ë°©ìƒì„±
 			MakeRoomTypeLeftNode(node, Vector2(node->GetPosition().x, node->GetPosition().y), node->GetWidth(), split, 1 - static_cast<float>(split) / maxLen);
 			MakeRoomTypeRightNode(node, Vector2(node->GetPosition().x, node->GetPosition().y + split), node->GetWidth(), node->GetHeight() - split, 1 - static_cast<float>(split) / maxLen);
 		}	
@@ -121,36 +121,36 @@ void DungeonMaker::DivideMap(RoomNode* node, int depth)
 		}
 	}
 
-	//ºĞÇÒÇÑ ³ëµå¸¦ ÀÌ¾î¼­ ºĞÇÒ
+	//ë¶„í• í•œ ë…¸ë“œë¥¼ ì´ì–´ì„œ ë¶„í• 
 	DivideMap(node->leftNode, depth + 1);
 	DivideMap(node->rightNode, depth + 1);
 
-	// ¿ŞÂÊ ³ëµåÀÇ Áß½É ÁÂÇ¥¿Í ¿À¸¥ÂÊ ³ëµå ±æ ¿¬°á
+	// ì™¼ìª½ ë…¸ë“œì˜ ì¤‘ì‹¬ ì¢Œí‘œì™€ ì˜¤ë¥¸ìª½ ë…¸ë“œ ê¸¸ ì—°ê²°
 	if (node->leftNode->rect.position.x == node->rightNode->rect.position.x)
 	{
-		//À§ ¾Æ·¡
+		//ìœ„ ì•„ë˜
 		MakeVerticalRoad(node);
 	}
 	else
 	{
-		//ÁÂ ¿ì
+		//ì¢Œ ìš°
 		MakeHorizontalRoad(node);
 	}
 
-	//¸ğµç ¹æÀÌ ¿¬°áµÇ°Ô ¸¸µé±â À§ÇØ ÀÚ½ÅÀÇ Rect Á¤º¸¸¦ ÀÚ½ÄÀÇ Rect Á¤º¸·Î ´ëÀÔ
+	//ëª¨ë“  ë°©ì´ ì—°ê²°ë˜ê²Œ ë§Œë“¤ê¸° ìœ„í•´ ìì‹ ì˜ Rect ì •ë³´ë¥¼ ìì‹ì˜ Rect ì •ë³´ë¡œ ëŒ€ì…
 	int randomChild = Utils::Random(0, 1);
 	randomChild == 0 ? node->room = node->leftNode->room : node->room = node->rightNode->room;
 }
 
-//¹æ¸¸µé±â
-//¸¶Áö¸· ±íÀÌ¶ó¸é ÇØ´ç ³ëµå ¾È¿¡ ¹æ¸¸µé±â
-//¹æÀÇ °¡·Î ¼¼·Î ±æÀÌ¸¦ ³ÑÁö ¾Ê°í ·£´ıÀ¸·Î »ı¼º
+//ë°©ë§Œë“¤ê¸°
+//ë§ˆì§€ë§‰ ê¹Šì´ë¼ë©´ í•´ë‹¹ ë…¸ë“œ ì•ˆì— ë°©ë§Œë“¤ê¸°
+//ë°©ì˜ ê°€ë¡œ ì„¸ë¡œ ê¸¸ì´ë¥¼ ë„˜ì§€ ì•Šê³  ëœë¤ìœ¼ë¡œ ìƒì„±
 void DungeonMaker::MakeRoom(RoomNode* node)
 {
 	int tempWidth = node->GetWidth();
 	int tempHeight= node->GetHeight();
 
-	//ÀÛÀº Rect ¹æÀº Å©°Ô, Å« Rect ¹æÀº ÀÛ°Ô ±æÀÌ ÁöÁ¤
+	//ì‘ì€ Rect ë°©ì€ í¬ê²Œ, í° Rect ë°©ì€ ì‘ê²Œ ê¸¸ì´ ì§€ì •
 	if (node->GetRatio() > 0.5)
 	{
 		node->room.width= (static_cast<int>(node->GetWidth() * node->GetRatio()));
@@ -161,8 +161,8 @@ void DungeonMaker::MakeRoom(RoomNode* node)
 		node->room.width= (static_cast<int>(node->GetWidth() * node->GetRatio() * Utils::RandomFloat(1.5f, 1.7f)));
 		node->room.height=(static_cast<int>(node->GetHeight() * node->GetRatio() * Utils::RandomFloat(1.5f, 1.7f)));
 	}
-	//¿¹¿Ü Ã³¸®
-	// ±æÀÌ°¡ ÃæºĞÇÏÁö ¾Ê´Ù¸é ±âÁ¸ À§Ä¡ °ªÀ¸·Î ÁøÇà
+	//ì˜ˆì™¸ ì²˜ë¦¬
+	// ê¸¸ì´ê°€ ì¶©ë¶„í•˜ì§€ ì•Šë‹¤ë©´ ê¸°ì¡´ ìœ„ì¹˜ ê°’ìœ¼ë¡œ ì§„í–‰
 	if (tempWidth <= node->room.width + 2 || tempHeight <= node->room.height + 2)
 	{
 		node->room.width= tempWidth;
@@ -171,16 +171,16 @@ void DungeonMaker::MakeRoom(RoomNode* node)
 	}
 	else
 	{
-		// ÀÎµ¦½º°ªÀ» ·£´ıÀ¸·Î ÁöÁ¤
-		// ÃÖ´ë ÀÎµ¦½º = ¸¶Áö¸· ÀÎµ¦½º - ±æÀÌ - 1
+		// ì¸ë±ìŠ¤ê°’ì„ ëœë¤ìœ¼ë¡œ ì§€ì •
+		// ìµœëŒ€ ì¸ë±ìŠ¤ = ë§ˆì§€ë§‰ ì¸ë±ìŠ¤ - ê¸¸ì´ - 1
 		node->room.position = (Vector2(
 			Utils::Random(node->GetPosition().x + 1, node->GetPosition().x + tempWidth - node->room.width) ,
 			Utils::Random(node->GetPosition().y + 1, node->GetPosition().y + tempHeight - node->room.height)
 		));
 	}
-	//º® ±×¸®±â
+	//ë²½ ê·¸ë¦¬ê¸°
 	
-	//¹æ Å©±â¸¸Å­ ±×¸®±â
+	//ë°© í¬ê¸°ë§Œí¼ ê·¸ë¦¬ê¸°
 	for (int h = node->room.position.y; h < node->room.position.y + node->room.height; ++h)
 	{
 		std::fill(map + h * mapWidth + node->room.position.x, map + h * mapWidth + node->room.position.x + node->room.width - 1, 3);
@@ -192,65 +192,65 @@ void DungeonMaker::MakeRoom(RoomNode* node)
 void DungeonMaker::MakeRoad()
 {
 	/*
-	¹®Á¦ 1 : »óÀ§ ³ëµå¿¡¼­ ±æÀ» ¸¸µé °æ¿ì Áß°£¿¡ ¹æÀ» ¶Õ°í ±æÀ» ¸¸µç´Ù.
-        A*¾Ë°í¸®Áò->playerÃßÀû¿¡µµ »ç¿ëÇÒ °ÍÀÌ¹Ç·Î ÀçÈ°¿ëÇÒ ¼ö ÀÖ°Ô ¸¸µé±â
-        ¹İ¸ñ¹® - allRooms ´ÙÀ½ idx¸¦ A*¾Ë°í¸®ÁòÀ¸·Î ±æ ¿¬°á
-	¹®Á¦ 2: º¸½ºRoomÀ» ¾È°ÅÄ¡°í ¸ğµç ±æÀ» ¾î¶»°Ô ¿¬°áÇÏ´Â°¡?
-        ¹æ¹ı 1 :1 - 2 - 3 - 4 - 5 - 6 °ú °°ÀÌ ÀÏÀÚÇüÀ¸·Î ±¸ÇöÇÏ´Â ¹æ¹ı, 6¿¡ º¸½º¹æ
-        ¹æ¹ı 2 : ex) º¸½º°¡ i¹ø¹æÀÌ¶ó¸é i-1°ú i+1À» ¿¬°á
+	ë¬¸ì œ 1 : ìƒìœ„ ë…¸ë“œì—ì„œ ê¸¸ì„ ë§Œë“¤ ê²½ìš° ì¤‘ê°„ì— ë°©ì„ ëš«ê³  ê¸¸ì„ ë§Œë“ ë‹¤.
+        A*ì•Œê³ ë¦¬ì¦˜->playerì¶”ì ì—ë„ ì‚¬ìš©í•  ê²ƒì´ë¯€ë¡œ ì¬í™œìš©í•  ìˆ˜ ìˆê²Œ ë§Œë“¤ê¸°
+        ë°˜ëª©ë¬¸ - allRooms ë‹¤ìŒ idxë¥¼ A*ì•Œê³ ë¦¬ì¦˜ìœ¼ë¡œ ê¸¸ ì—°ê²°
+	ë¬¸ì œ 2: ë³´ìŠ¤Roomì„ ì•ˆê±°ì¹˜ê³  ëª¨ë“  ê¸¸ì„ ì–´ë–»ê²Œ ì—°ê²°í•˜ëŠ”ê°€?
+        ë°©ë²• 1 :1 - 2 - 3 - 4 - 5 - 6 ê³¼ ê°™ì´ ì¼ìí˜•ìœ¼ë¡œ êµ¬í˜„í•˜ëŠ” ë°©ë²•, 6ì— ë³´ìŠ¤ë°©
+        ë°©ë²• 2 : ex) ë³´ìŠ¤ê°€ ië²ˆë°©ì´ë¼ë©´ i-1ê³¼ i+1ì„ ì—°ê²°
 	*/
 }
 
 void DungeonMaker::MakeHorizontalRoad(const RoomNode* node)
 {
-	//Todo : ¹®¼³Ä¡ - lCenterX-2 lCenterY 
+	//Todo : ë¬¸ì„¤ì¹˜ - lCenterX-2 lCenterY 
 
-	//¿ŞÂÊ³ëµå ¿ìÃø Áß°£
+	//ì™¼ìª½ë…¸ë“œ ìš°ì¸¡ ì¤‘ê°„
 	int lCenterY = node->leftNode->room.position.y + node->leftNode->room.height/2;
 	int lCenterX = node->leftNode->room.position.x + node->leftNode->room.width - 2;
-	//¿À¸¥ÂÊ³ëµå ÁÂÃø Áß°£
+	//ì˜¤ë¥¸ìª½ë…¸ë“œ ì¢Œì¸¡ ì¤‘ê°„
 	int rCenterY = node->rightNode->room.position.y + node->rightNode->room.height / 2;
 	int rCenterX = node->rightNode->room.position.x;
-	//Áß°£°ª
+	//ì¤‘ê°„ê°’
 	int middleX = node->leftNode->rect.position.x + node->leftNode->rect.width;//lCenterX + static_cast<int>((rCenterX - lCenterX) * node->currentRatio);
-	//¿ìÃø ÀÌµ¿
+	//ìš°ì¸¡ ì´ë™
 	for (int x = lCenterX; x <= middleX; ++x)
 		map[lCenterY * mapWidth + x] = 7;
 
 	int from = lCenterY <= rCenterY ? lCenterY : rCenterY;
 	int to = lCenterY <= rCenterY ? rCenterY : lCenterY;
-	//À§/¾Æ·¡ ÀÌµ¿
+	//ìœ„/ì•„ë˜ ì´ë™
 	for (int y = from; y <= to; ++y)
 		map[y * mapWidth + middleX] = 7;
-	//¿ìÃø ÀÌ¾î¼­ ÀÌµ¿
+	//ìš°ì¸¡ ì´ì–´ì„œ ì´ë™
 	for (int x = middleX; x <= rCenterX; ++x)
 		map[rCenterY * mapWidth + x] = 7;
 }
 
 void DungeonMaker::MakeVerticalRoad(const RoomNode* node)
 {
-	//Todo : ¹®¼³Ä¡ - lCenterX lCenterY-1
+	//Todo : ë¬¸ì„¤ì¹˜ - lCenterX lCenterY-1
 
-	//¿ŞÂÊ³ëµå ÇÏ´Ü Áß°£
+	//ì™¼ìª½ë…¸ë“œ í•˜ë‹¨ ì¤‘ê°„
 	int lCenterY = node->leftNode->room.position.y + node->leftNode->room.height - 1;
 	int lCenterX = node->leftNode->room.position.x + (node->leftNode->room.width / 2);
-	//¿À¸¥ÂÊ³ëµå »ó´Ü Áß°£
+	//ì˜¤ë¥¸ìª½ë…¸ë“œ ìƒë‹¨ ì¤‘ê°„
 	int rCenterY = node->rightNode->room.position.y;
 	int rCenterX = node->rightNode->room.position.x + (node->rightNode->room.width / 2);
-	//Áß°£¿¡ °ÅÃÄ¾ß ÇÒ À§Ä¡
+	//ì¤‘ê°„ì— ê±°ì³ì•¼ í•  ìœ„ì¹˜
 	int middleY = node->leftNode->rect.position.y + node->leftNode->rect.height;//lCenterY + static_cast<int>((rCenterY - lCenterY) * node->currentRatio);
 
-	//¾Æ·¡ ÀÌµ¿
+	//ì•„ë˜ ì´ë™
 	for (int y = lCenterY; y < middleY; ++y)
 		map[y * mapWidth + lCenterX] = 7;
 
 	int from = lCenterX <= rCenterX ? lCenterX : rCenterX;
 	int to = lCenterX <= rCenterX ? rCenterX : lCenterX;
-	//ÁÂ/¿ì ÀÌµ¿
+	//ì¢Œ/ìš° ì´ë™
 	for (int x = from; x <= to; x++)
 		map[middleY * mapWidth + x] = 7;
 
-	//ÀÌ¾î¼­ ¾Æ·¡ ÀÌµ¿
+	//ì´ì–´ì„œ ì•„ë˜ ì´ë™
 	for (int y = middleY; y <= rCenterY; ++y)
 		map[y * mapWidth + rCenterX] = 7;
 
@@ -258,12 +258,12 @@ void DungeonMaker::MakeVerticalRoad(const RoomNode* node)
 
 	
 }
-//¹æÀÇ Å¸ÀÔÀ» Á¤ÇØÁø °ª¿¡ µû¶ó »ı¼º ÈÄ ·£´ı Á¤·Ä
+//ë°©ì˜ íƒ€ì…ì„ ì •í•´ì§„ ê°’ì— ë”°ë¼ ìƒì„± í›„ ëœë¤ ì •ë ¬
 void DungeonMaker::SetRandomRoomType(int maxRoomCount)
 {
-	// Todo : ºñÀ²·Î ¼öÁ¤ÇØ¾ßÇÔ
+	// Todo : ë¹„ìœ¨ë¡œ ìˆ˜ì •í•´ì•¼í•¨
 
-	//¸Ê ¼ı
+	//ë§µ ìˆ«
 	allRoomTypes.emplace_back(RoomType::Player);
 	allRoomTypes.emplace_back(RoomType::MonsterBoss);
 	for (int eliteMonsterRoomCount = 0; eliteMonsterRoomCount < MONSTER_ELITE_ROOMTYPE_COUNT; ++eliteMonsterRoomCount)
@@ -279,7 +279,7 @@ void DungeonMaker::SetRandomRoomType(int maxRoomCount)
 		allRoomTypes.emplace_back(RoomType::Monster);
 	}
 
-	//Todo::·£´ı Á¤·Ä
+	//Todo::ëœë¤ ì •ë ¬
 	std::mt19937 generator(static_cast<unsigned int>(time(nullptr)));
 	std::shuffle(allRoomTypes.begin(), allRoomTypes.end(), generator);
 

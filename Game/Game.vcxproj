@@ -195,6 +195,7 @@
     <ClInclude Include="MapMaker\MonsterBossRoom.h" />
     <ClInclude Include="MapMaker\TreasurechestRoom.h" />
     <ClInclude Include="MapMaker\MonsterElite.h" />
+    <ClInclude Include="Utils\AStarPathfinder.h" />
     <ClInclude Include="Utils\Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

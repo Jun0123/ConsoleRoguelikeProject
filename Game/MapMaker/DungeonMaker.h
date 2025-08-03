@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "RoomNode.h"
 #include <vector>
 
@@ -26,34 +26,34 @@ struct DirectionMap
 class DungeonMaker
 {
 public:
-	// ¸Ê Å©±â , ¹æ ºĞÇÒ ÃÖ¼Ò/ÃÖ´ë ºñÀ²
+	// ë§µ í¬ê¸° , ë°© ë¶„í•  ìµœì†Œ/ìµœëŒ€ ë¹„ìœ¨
 	DungeonMaker(int inMapWidth, int inMapHeight, float inMinRatio, float inMaxRatio, int inMaxDepth);
 	~DungeonMaker();
 private:
-	// ¸Ê ºĞÇÒ ÇÔ¼ö : ±¸¿ª ³ª´©±â
+	// ë§µ ë¶„í•  í•¨ìˆ˜ : êµ¬ì—­ ë‚˜ëˆ„ê¸°
 	void DivideMap(RoomNode* node, int depth);
 	void MakeRoomTypeRightNode(RoomNode*& node, Vector2 inPosition, int inWidth, int inHeight, float inRatio);
 	void MakeRoomTypeLeftNode(RoomNode*& node, Vector2 inPosition, int inWidth, int inHeight, float inRatio);
-	// ¸Ê Ãâ·Â
+	// ë§µ ì¶œë ¥
 	void PrintMap();
 
-	//¹æ¸¸µé±â
+	//ë°©ë§Œë“¤ê¸°
 	void MakeRoom(RoomNode* node);
 
-	//±æ¸¸µé±â
+	//ê¸¸ë§Œë“¤ê¸°
 	// 
 	void MakeRoad();
 	void MakeHorizontalRoad(const RoomNode* node);
 	void MakeVerticalRoad(const RoomNode* node);
 
-	//¹æ Å¸ÀÔ ·£´ıÁöÁ¤
+	//ë°© íƒ€ì… ëœë¤ì§€ì •
 	void SetRandomRoomType(int maxRoomCount);
-	//¹æ Å¸ÀÔ »ı¼º
+	//ë°© íƒ€ì… ìƒì„±
 	
 private:
-	//ºĞÇÒ ÃÖ¼Ò ºñÀ²
+	//ë¶„í•  ìµœì†Œ ë¹„ìœ¨
 	float minRatio = 0.0f;
-	//ºĞÇÒ ÃÖ´ë ºñÀ²
+	//ë¶„í•  ìµœëŒ€ ë¹„ìœ¨
 	float maxRatio = 0.0f;
 	int mapWidth;
 	int mapHeight;
