@@ -42,10 +42,25 @@
     <ClCompile Include="Actor\EnemyDestroyEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RoomNode.cpp">
+    <ClCompile Include="MapMaker\RoomNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DungeonMaker.cpp">
+    <ClCompile Include="MapMaker\DungeonMaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MapMaker\MonsterRoom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MapMaker\PlayerRoom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MapMaker\MonsterBossRoom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MapMaker\TreasurechestRoom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MapMaker\MonsterElite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,10 +89,25 @@
     <ClInclude Include="Actor\EnemyDestroyEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RoomNode.h">
+    <ClInclude Include="MapMaker\RoomNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DungeonMaker.h">
+    <ClInclude Include="MapMaker\DungeonMaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapMaker\MonsterRoom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapMaker\PlayerRoom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapMaker\MonsterBossRoom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapMaker\TreasurechestRoom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapMaker\MonsterElite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

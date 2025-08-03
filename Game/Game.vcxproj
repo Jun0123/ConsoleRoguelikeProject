@@ -168,11 +168,16 @@
     <ClCompile Include="Actor\EnemyDestroyEffect.cpp" />
     <ClCompile Include="Actor\Player.cpp" />
     <ClCompile Include="Actor\PlayerBullet.cpp" />
-    <ClCompile Include="DungeonMaker.cpp" />
+    <ClCompile Include="MapMaker\DungeonMaker.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Level\GameLevel.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="RoomNode.cpp" />
+    <ClCompile Include="MapMaker\RoomNode.cpp" />
+    <ClCompile Include="MapMaker\MonsterRoom.cpp" />
+    <ClCompile Include="MapMaker\PlayerRoom.cpp" />
+    <ClCompile Include="MapMaker\MonsterBossRoom.cpp" />
+    <ClCompile Include="MapMaker\TreasurechestRoom.cpp" />
+    <ClCompile Include="MapMaker\MonsterElite.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -181,10 +186,15 @@
     <ClInclude Include="Actor\EnemyDestroyEffect.h" />
     <ClInclude Include="Actor\Player.h" />
     <ClInclude Include="Actor\PlayerBullet.h" />
-    <ClInclude Include="DungeonMaker.h" />
+    <ClInclude Include="MapMaker\DungeonMaker.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Level\GameLevel.h" />
-    <ClInclude Include="RoomNode.h" />
+    <ClInclude Include="MapMaker\RoomNode.h" />
+    <ClInclude Include="MapMaker\MonsterRoom.h" />
+    <ClInclude Include="MapMaker\PlayerRoom.h" />
+    <ClInclude Include="MapMaker\MonsterBossRoom.h" />
+    <ClInclude Include="MapMaker\TreasurechestRoom.h" />
+    <ClInclude Include="MapMaker\MonsterElite.h" />
     <ClInclude Include="Utils\Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
