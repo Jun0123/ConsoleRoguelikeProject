@@ -178,6 +178,7 @@
     <ClCompile Include="MapMaker\MonsterBossRoom.cpp" />
     <ClCompile Include="MapMaker\TreasurechestRoom.cpp" />
     <ClCompile Include="MapMaker\MonsterElite.cpp" />
+    <ClCompile Include="Utils\AStarPathfinder.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>

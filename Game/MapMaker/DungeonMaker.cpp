@@ -5,6 +5,7 @@
 #include "MonsterBossRoom.h"
 #include "TreasurechestRoom.h"
 #include "PlayerRoom.h"
+#include "Utils/AStarPathfinder.h"
 
 #include <iostream>
 #include <bits.h>
@@ -42,6 +43,7 @@ DungeonMaker::DungeonMaker(int inMapWidth, int inMapHeight, float inMinRatio, fl
 
 	rootNode = new RoomNode(Vector2(MAPBASEPOINTX, MAPBASEPOINTY), inMapWidth, inMapHeight, 0.0f);
 	DivideMap(rootNode, STARTDEPTH);
+	MakeRoad(rootNode);
 	PrintMap();
 }
 
@@ -125,21 +127,21 @@ void DungeonMaker::DivideMap(RoomNode* node, int depth)
 	DivideMap(node->leftNode, depth + 1);
 	DivideMap(node->rightNode, depth + 1);
 
-	// 왼쪽 노드의 중심 좌표와 오른쪽 노드 길 연결
-	if (node->leftNode->rect.position.x == node->rightNode->rect.position.x)
-	{
-		//위 아래
-		MakeVerticalRoad(node);
-	}
-	else
-	{
-		//좌 우
-		MakeHorizontalRoad(node);
-	}
+	//// 왼쪽 노드의 중심 좌표와 오른쪽 노드 길 연결
+	//if (node->leftNode->rect.position.x == node->rightNode->rect.position.x)
+	//{
+	//	//위 아래
+	//	MakeVerticalRoad(node);
+	//}
+	//else
+	//{
+	//	//좌 우
+	//	MakeHorizontalRoad(node);
+	//}
 
-	//모든 방이 연결되게 만들기 위해 자신의 Rect 정보를 자식의 Rect 정보로 대입
-	int randomChild = Utils::Random(0, 1);
-	randomChild == 0 ? node->room = node->leftNode->room : node->room = node->rightNode->room;
+	////모든 방이 연결되게 만들기 위해 자신의 Rect 정보를 자식의 Rect 정보로 대입
+	//int randomChild = Utils::Random(0, 1);
+	//randomChild == 0 ? node->room = node->leftNode->room : node->room = node->rightNode->room;
 }
 
 //방만들기
@@ -189,9 +191,9 @@ void DungeonMaker::MakeRoom(RoomNode* node)
 
 
 
-void DungeonMaker::MakeRoad()
+void DungeonMaker::MakeRoad(const RoomNode* node)
 {
-	/*
+	/* Todo :
 	문제 1 : 상위 노드에서 길을 만들 경우 중간에 방을 뚫고 길을 만든다.
         A*알고리즘->player추적에도 사용할 것이므로 재활용할 수 있게 만들기
         반목문 - allRooms 다음 idx를 A*알고리즘으로 길 연결
@@ -199,6 +201,56 @@ void DungeonMaker::MakeRoad()
         방법 1 :1 - 2 - 3 - 4 - 5 - 6 과 같이 일자형으로 구현하는 방법, 6에 보스방
         방법 2 : ex) 보스가 i번방이라면 i-1과 i+1을 연결
 	*/
+
+	std::vector<char> road;
+	road.emplace_back(7);
+	road.emplace_back(0);
+	road.emplace_back(1);
+
+	for (int roomNum = 0; roomNum < (int)allRooms.size()-1; ++roomNum)
+	{
+		std::vector<Node*> path;
+		int lCenterY=0;
+		int lCenterX=0;
+		int rCenterY=0;
+		int rCenterX=0;
+		// 왼쪽 노드의 중심 좌표와 오른쪽 노드 길 연결
+		if (node->leftNode->rect.position.x != node->rightNode->rect.position.x)
+		{
+			//위 아래
+			//왼쪽노드 하단 중간
+			lCenterY = allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height - 1;
+			lCenterX = allRooms[roomNum]->room.position.x + (allRooms[roomNum]->room.width / 2);
+			//오른쪽노드 상단 중간
+			rCenterY = allRooms[roomNum + 1]->room.position.y;
+			rCenterX = allRooms[roomNum + 1]->room.position.x + (allRooms[roomNum + 1]->room.width / 2);
+		}
+		else
+		{
+			//좌 우
+			//왼쪽노드 우측 중간
+			lCenterY = allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height / 2;
+			lCenterX = allRooms[roomNum]->room.position.x + allRooms[roomNum]->room.width - 2;
+			//오른쪽노드 좌측 중간
+			rCenterY = allRooms[roomNum + 1]->room.position.y + allRooms[roomNum + 1]->room.height / 2;
+			rCenterX = allRooms[roomNum + 1]->room.position.x;
+		}
+		
+		map[lCenterY * mapWidth + lCenterX] = 7;
+		map[rCenterY * mapWidth + rCenterX] = 7;
+		AStarPathfinder pathfinder(map, mapWidth, mapHeight, Vector2(lCenterX, lCenterY), Vector2(rCenterX, rCenterY), road, path);
+		for (Node*& node : path)
+		{
+			map[node->y * mapWidth + node->x] = 7;
+
+			delete node;
+			node = nullptr;
+		}
+		path.clear();
+	}
+	
+	
+	
 }
 
 void DungeonMaker::MakeHorizontalRoad(const RoomNode* node)
@@ -278,12 +330,9 @@ void DungeonMaker::SetRandomRoomType(int maxRoomCount)
 	{
 		allRoomTypes.emplace_back(RoomType::Monster);
 	}
-
-	//Todo::랜덤 정렬
+	//랜덤정렬
 	std::mt19937 generator(static_cast<unsigned int>(time(nullptr)));
 	std::shuffle(allRoomTypes.begin(), allRoomTypes.end(), generator);
-
-	
 }
 
 void DungeonMaker::MakeRoomTypeLeftNode(RoomNode*& node, Vector2 inPosition, int inWidth, int inHeight, float inRatio)

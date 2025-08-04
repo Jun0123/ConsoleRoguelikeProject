@@ -42,7 +42,7 @@ private:
 
 	//길만들기
 	// 
-	void MakeRoad();
+	void MakeRoad(const RoomNode* node);
 	void MakeHorizontalRoad(const RoomNode* node);
 	void MakeVerticalRoad(const RoomNode* node);
 

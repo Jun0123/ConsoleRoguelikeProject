@@ -142,7 +142,7 @@ void Engine::Run()
 		FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED
 	);
 }
-
+// Todo : 맵을 한번에 넘기는 함수 필요
 void Engine::WriteToBuffer(
 	const Vector2& position, 
 	const char* image, 
