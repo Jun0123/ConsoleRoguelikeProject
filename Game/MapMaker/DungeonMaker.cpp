@@ -209,7 +209,7 @@ void DungeonMaker::MakeRoad(const RoomNode* node)
 
 	for (int roomNum = 0; roomNum < (int)allRooms.size()-1; ++roomNum)
 	{
-		std::vector<Node*> path;
+		std::vector < std::shared_ptr<Node>> path;
 		int lCenterY=0;
 		int lCenterX=0;
 		int rCenterY=0;
@@ -239,12 +239,9 @@ void DungeonMaker::MakeRoad(const RoomNode* node)
 		map[lCenterY * mapWidth + lCenterX] = 7;
 		map[rCenterY * mapWidth + rCenterX] = 7;
 		AStarPathfinder pathfinder(map, mapWidth, mapHeight, Vector2(lCenterX, lCenterY), Vector2(rCenterX, rCenterY), road, path);
-		for (Node*& node : path)
+		for (auto& node : path)
 		{
 			map[node->y * mapWidth + node->x] = 7;
-
-			delete node;
-			node = nullptr;
 		}
 		path.clear();
 	}
