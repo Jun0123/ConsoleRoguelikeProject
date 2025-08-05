@@ -42,7 +42,7 @@ class AStarPathfinder
 {
 public:
     // 맵 포인터, 맵 사이즈, 시작위치, 끝 위치,이동 가능한 문자,구할 경로
-    AStarPathfinder(int*& map, int sizeX, int sizeY, Vector2 startPosition, Vector2 endPosition, std::vector<char> road , std::vector < std::shared_ptr<Node>>& outPath);
+    AStarPathfinder(char*& map, int sizeX, int sizeY, Vector2 startPosition, Vector2 endPosition, std::vector<char> road , std::vector < std::shared_ptr<Node>>& outPath);
     ~AStarPathfinder();
 private:
     // 최적의 경로를 예측하는 기준 f(n) = g(n) + h(n)
@@ -63,7 +63,7 @@ public:
 private:
     // 방문한 노드 , 중복값 방지 NodePtrHash
     std::unordered_set<std::shared_ptr<Node>, NodePtrHash, NodePtrEqual> closedList;
-    const int* grid = nullptr;
+    const char* grid = nullptr;
     int gridSizeX = 0;
     int gridSizeY = 0;
     std::shared_ptr<Node> start = nullptr;

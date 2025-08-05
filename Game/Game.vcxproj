@@ -168,6 +168,8 @@
     <ClCompile Include="Actor\EnemyDestroyEffect.cpp" />
     <ClCompile Include="Actor\Player.cpp" />
     <ClCompile Include="Actor\PlayerBullet.cpp" />
+    <ClCompile Include="Actors\DGPlayer.cpp" />
+    <ClCompile Include="Level\DungeonLevel.cpp" />
     <ClCompile Include="MapMaker\DungeonMaker.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Level\GameLevel.cpp" />
@@ -182,11 +184,14 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actors\DungeonMap.h" />
     <ClInclude Include="Actor\Enemy.h" />
     <ClInclude Include="Actor\EnemyBullet.h" />
     <ClInclude Include="Actor\EnemyDestroyEffect.h" />
     <ClInclude Include="Actor\Player.h" />
     <ClInclude Include="Actor\PlayerBullet.h" />
+    <ClInclude Include="Actors\DGPlayer.h" />
+    <ClInclude Include="Level\DungeonLevel.h" />
     <ClInclude Include="MapMaker\DungeonMaker.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Level\GameLevel.h" />

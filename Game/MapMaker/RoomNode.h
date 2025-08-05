@@ -46,7 +46,7 @@ public:
 	inline void SetHeight(const int inHeight) { rect.height = inHeight; }
 	inline Vector2 GetPosition() const { return rect.position; }
 	inline void SetPosition(const Vector2 inPosition) {  rect.position = inPosition; }
-
+	inline Rect GetRoomInfo() { return room; }
 	void DeleteNode(RoomNode*& nodeToDelete);
 
 	inline float GetRatio() const { return currentRatio; }

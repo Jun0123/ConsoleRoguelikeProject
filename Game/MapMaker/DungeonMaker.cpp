@@ -14,28 +14,33 @@
 #include <random>
 #include <memory>
 
+
 #define MAPBASEPOINTX 0
 #define MAPBASEPOINTY 0
 #define STARTDEPTH 0
-#define MONSTER_ELITE_ROOMTYPE_COUNT 5
+#define MONSTER_ROOMTYPE_RATE 0.5
+#define MONSTER_ELITE_ROOMTYPE_RATE 0.334
 #define MONSTER_BOSS_ROOMTYPE_COUNT 1
-#define TREASURECHEST_ROOMTYPE_COUNT 3
+#define TREASURECHEST_ROOMTYPE_RATE 0.167
 #define PLAYER_ROOMTYPE_COUNT 1
+#define WAY '#'
+#define INSIDE '_'
+#define OUTSIDE '\0'
 
 /*
 	Todo : 맵생성
 	1. 방만들기 v
 	2. 길만들기 v
 	3. 벽만들기
-	3. 맵에 관련된 오브젝트로 변환하기
-	4. 랜덤으로 아이템, 적 스폰 하기
+	3. 맵에 관련된 오브젝트로 변환하기 
+	4. 랜덤으로 아이템, 적 스폰 하기 
 */
 
 DungeonMaker::DungeonMaker(int inMapWidth, int inMapHeight, float inMinRatio, float inMaxRatio, int inMaxDepth)
 	: mapWidth(inMapWidth), mapHeight(inMapHeight), minRatio(inMinRatio), maxRatio(inMaxRatio), maxDepth(inMaxDepth)
 {
-	map = new int[mapHeight * mapWidth];
-	memset(map, 0, sizeof(int) * mapHeight * mapWidth);
+	map = new char[mapHeight * mapWidth];
+	memset(map, 0, sizeof(char) * mapHeight * mapWidth);
 
 	// maxDepth로 방이 몇개 만들어지는지 계산
 	// 방 개수만큼 방 타입 지정 및 랜덤 정렬
@@ -47,14 +52,23 @@ DungeonMaker::DungeonMaker(int inMapWidth, int inMapHeight, float inMinRatio, fl
 	PrintMap();
 }
 
+DungeonMaker::DungeonMaker(char*& map, int inMapWidth, int inMapHeight, float inMinRatio, float inMaxRatio, int inMaxDepth)
+	: map(map), mapWidth(inMapWidth), mapHeight(inMapHeight), minRatio(inMinRatio), maxRatio(inMaxRatio), maxDepth(inMaxDepth)
+{
+	memset(map, 0, sizeof(char) * mapHeight * mapWidth);
+
+	// maxDepth로 방이 몇개 만들어지는지 계산
+	// 방 개수만큼 방 타입 지정 및 랜덤 정렬
+	SetRandomRoomType(static_cast<int>(std::pow(2, maxDepth)));
+
+	rootNode = new RoomNode(Vector2(MAPBASEPOINTX, MAPBASEPOINTY), inMapWidth, inMapHeight, 0.0f);
+	DivideMap(rootNode, STARTDEPTH);
+	MakeRoad(rootNode);
+	//PrintMap();
+}
+
 DungeonMaker::~DungeonMaker()
 {
-	if (nullptr != map)
-	{
-		delete[] map;
-		map = nullptr;
-	}
-
 	if (nullptr != rootNode)
 	{
 		delete rootNode;
@@ -98,7 +112,7 @@ void DungeonMaker::DivideMap(RoomNode* node, int depth)
 		for (int y = node->GetPosition().y; y < node->GetPosition().y + node->GetHeight(); ++y)
 		{
 			// 1차원 배열  ->  2차원 배열 인덱스 구하기  (세로 좌표 * mapWidth) + 가로 좌표
-			map[y * mapWidth + node->rightNode->GetPosition().x] = 1;
+			map[y * mapWidth + node->rightNode->GetPosition().x] = OUTSIDE;
 		}
 	}
 	// 높이가 너비보다 값이 크다면 위/아래로 분할한다.
@@ -119,7 +133,7 @@ void DungeonMaker::DivideMap(RoomNode* node, int depth)
 
 		for (int x = node->leftNode->GetPosition().x; x < node->leftNode->GetPosition().x + node->leftNode->GetWidth(); ++x)
 		{
-			map[node->rightNode->GetPosition().y* mapWidth + x] = 1;
+			map[node->rightNode->GetPosition().y* mapWidth + x] = OUTSIDE;
 		}
 	}
 
@@ -155,7 +169,7 @@ void DungeonMaker::MakeRoom(RoomNode* node)
 	//작은 Rect 방은 크게, 큰 Rect 방은 작게 길이 지정
 	if (node->GetRatio() > 0.5)
 	{
-		node->room.width= (static_cast<int>(node->GetWidth() * node->GetRatio()));
+		node->room.width =(static_cast<int>(node->GetWidth() * node->GetRatio()));
 		node->room.height=(static_cast<int>(node->GetHeight() * node->GetRatio()));
 	}
 	else
@@ -185,7 +199,23 @@ void DungeonMaker::MakeRoom(RoomNode* node)
 	//방 크기만큼 그리기
 	for (int h = node->room.position.y; h < node->room.position.y + node->room.height; ++h)
 	{
-		std::fill(map + h * mapWidth + node->room.position.x, map + h * mapWidth + node->room.position.x + node->room.width - 1, 3);
+		std::fill(map + h * mapWidth + node->room.position.x, map + h * mapWidth + node->room.position.x + node->room.width - 1, INSIDE);
+	}
+}
+
+void DungeonMaker::GetAllRoomTypes(std::vector<RoomType>& outRoomTypes)
+{
+	for (const RoomType roomType : allRoomTypes) {
+		outRoomTypes.emplace_back(roomType);
+	}
+}
+
+void DungeonMaker::GetAllRooms(std::vector<RoomNode>& outRooms)
+{
+	for (const RoomNode* ptr : allRooms) {
+         if (ptr != nullptr) {
+			 outRooms.emplace_back(*ptr);
+		}
 	}
 }
 
@@ -203,48 +233,167 @@ void DungeonMaker::MakeRoad(const RoomNode* node)
 	*/
 
 	std::vector<char> road;
-	road.emplace_back(7);
-	road.emplace_back(0);
-	road.emplace_back(1);
+	road.emplace_back(OUTSIDE);
+	road.emplace_back(WAY);
 
-	for (int roomNum = 0; roomNum < (int)allRooms.size()-1; ++roomNum)
+	
+	// 4방향 비교
+	// 각 중심비교
+	for (int roomNum = 0; roomNum < (int)allRooms.size() - 1; ++roomNum)
 	{
 		std::vector < std::shared_ptr<Node>> path;
-		int lCenterY=0;
-		int lCenterX=0;
-		int rCenterY=0;
-		int rCenterX=0;
-		// 왼쪽 노드의 중심 좌표와 오른쪽 노드 길 연결
-		if (node->leftNode->rect.position.x != node->rightNode->rect.position.x)
+
+		int lCenterY = 0;
+		int lCenterX = 0;
+		int rCenterY = 0;
+		int rCenterX = 0;
+
+		std::vector<std::pair<Vector2, int>> edges;
+		Vector2 downLeftEdge(allRooms[roomNum]->room.position.x, allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height);
+		edges.push_back({ downLeftEdge , mapWidth * mapHeight });
+		Vector2 downRightEdge(allRooms[roomNum]->room.position.x + allRooms[roomNum]->room.width, allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height);
+		edges.push_back({ downRightEdge , mapWidth * mapHeight });
+		Vector2 upRightEdge(allRooms[roomNum]->room.position.x + allRooms[roomNum]->room.width, allRooms[roomNum]->room.position.y);
+		edges.push_back({ upRightEdge , mapWidth * mapHeight });
+		Vector2 upLeftEdge(allRooms[roomNum]->room.position.x, allRooms[roomNum]->room.position.y);
+		edges.push_back({ upLeftEdge , mapWidth * mapHeight });
+
+		Vector2 minEdge1;
+		Vector2 minEdge2;
+
+		for (auto& edge : edges)
 		{
-			//위 아래
-			//왼쪽노드 하단 중간
+			int distance = std::abs(allRooms[roomNum + 1]->room.position.y + allRooms[roomNum + 1]->room.height / 2 - edge.first.y) + std::abs(allRooms[roomNum + 1]->room.position.x + allRooms[roomNum + 1]->room.width / 2 - edge.first.x);
+			edge.second = distance;
+		}
+
+		std::sort(edges.begin(), edges.end(), &Compare);
+		minEdge1 = edges[0].first;
+		minEdge2 = edges[1].first;
+		// 아래
+		if ((minEdge1 == downLeftEdge && minEdge2 == downRightEdge) || (minEdge1 == downRightEdge && minEdge2 == downLeftEdge))
+		{
 			lCenterY = allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height - 1;
 			lCenterX = allRooms[roomNum]->room.position.x + (allRooms[roomNum]->room.width / 2);
-			//오른쪽노드 상단 중간
-			rCenterY = allRooms[roomNum + 1]->room.position.y;
-			rCenterX = allRooms[roomNum + 1]->room.position.x + (allRooms[roomNum + 1]->room.width / 2);
 		}
-		else
+		// 위
+		if ((minEdge1 == upLeftEdge && minEdge2 == upRightEdge) || (minEdge1 == upRightEdge && minEdge2 == upLeftEdge))
 		{
-			//좌 우
-			//왼쪽노드 우측 중간
-			lCenterY = allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height / 2;
-			lCenterX = allRooms[roomNum]->room.position.x + allRooms[roomNum]->room.width - 2;
-			//오른쪽노드 좌측 중간
-			rCenterY = allRooms[roomNum + 1]->room.position.y + allRooms[roomNum + 1]->room.height / 2;
-			rCenterX = allRooms[roomNum + 1]->room.position.x;
+			lCenterY = allRooms[roomNum]->room.position.y;
+			lCenterX = allRooms[roomNum]->room.position.x + (allRooms[roomNum]->room.width / 2);
 		}
+		// 좌
+		if ((minEdge1 == downLeftEdge && minEdge2 == upLeftEdge) || (minEdge1 == upLeftEdge && minEdge2 == downLeftEdge))
+		{
+			lCenterY = allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height / 2;
+			lCenterX = allRooms[roomNum]->room.position.x;
+		}
+		// 우
+		if ((minEdge1 == downRightEdge && minEdge2 == upRightEdge) || (minEdge1 == upRightEdge && minEdge2 == downRightEdge))
+		{
+			lCenterY = allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height / 2;
+			lCenterX = allRooms[roomNum]->room.position.x + allRooms[roomNum]->room.width - 1;
+		}
+
+		edges.clear();
+
+
+		Vector2 downLeftEdge2(allRooms[roomNum + 1]->room.position.x, allRooms[roomNum + 1]->room.position.y + allRooms[roomNum + 1]->room.height);
+		edges.push_back({ downLeftEdge2, mapWidth * mapHeight });
+		Vector2 downRightEdge2(allRooms[roomNum + 1]->room.position.x + allRooms[roomNum + 1]->room.width, allRooms[roomNum + 1]->room.position.y + allRooms[roomNum]->room.height);
+		edges.push_back({ downRightEdge2, mapWidth * mapHeight });
+		Vector2 upRightEdge2(allRooms[roomNum + 1]->room.position.x + allRooms[roomNum + 1]->room.width, allRooms[roomNum + 1]->room.position.y);
+		edges.push_back({upRightEdge2, mapWidth * mapHeight});
+		Vector2 upLeftEdge2(allRooms[roomNum + 1]->room.position.x, allRooms[roomNum + 1]->room.position.y);
+		edges.push_back({ upLeftEdge2, mapWidth * mapHeight });
+
+
 		
-		map[lCenterY * mapWidth + lCenterX] = 7;
-		map[rCenterY * mapWidth + rCenterX] = 7;
+
+		for (auto& edge : edges)
+		{
+			int distance = std::abs(allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height/2 - edge.first.y) + std::abs(allRooms[roomNum]->room.position.x + allRooms[roomNum]->room.width/2 - edge.first.x);
+			edge.second = distance;
+		}
+
+		std::sort(edges.begin(), edges.end(), &Compare);
+		minEdge1 = edges[0].first;
+		minEdge2 = edges[1].first;
+		// 아래
+		if ((minEdge1 == downLeftEdge2 && minEdge2 == downRightEdge2) || (minEdge1 == downRightEdge2 && minEdge2 == downLeftEdge2))
+		{
+			rCenterY = allRooms[roomNum+1]->room.position.y + allRooms[roomNum+1]->room.height - 1;
+			rCenterX = allRooms[roomNum+1]->room.position.x + (allRooms[roomNum+1]->room.width / 2);
+		}
+		// 위
+		if ((minEdge1 == upLeftEdge2 && minEdge2 == upRightEdge2) || (minEdge1 == upRightEdge2 && minEdge2 == upLeftEdge2))
+		{
+			rCenterY = allRooms[roomNum+1]->room.position.y;
+			rCenterX = allRooms[roomNum+1]->room.position.x + (allRooms[roomNum+1]->room.width / 2);
+		}
+		// 좌
+		if ((minEdge1 == downLeftEdge2 && minEdge2 == upLeftEdge2) || (minEdge1 == upLeftEdge2 && minEdge2 == downLeftEdge2))
+		{
+			rCenterY = allRooms[roomNum+1]->room.position.y + allRooms[roomNum+1]->room.height / 2;
+			rCenterX = allRooms[roomNum+1]->room.position.x;
+		}
+		// 우
+		if ((minEdge1 == downRightEdge2 && minEdge2 == upRightEdge2) || (minEdge1 == upRightEdge2 && minEdge2 == downRightEdge2))
+		{
+			rCenterY = allRooms[roomNum+1]->room.position.y + allRooms[roomNum+1]->room.height / 2;
+			rCenterX = allRooms[roomNum+1]->room.position.x + allRooms[roomNum+1]->room.width - 1;
+		}
+
+		map[lCenterY * mapWidth + lCenterX] = WAY;
+		map[rCenterY * mapWidth + rCenterX] = WAY;
 		AStarPathfinder pathfinder(map, mapWidth, mapHeight, Vector2(lCenterX, lCenterY), Vector2(rCenterX, rCenterY), road, path);
 		for (auto& node : path)
 		{
-			map[node->y * mapWidth + node->x] = 7;
+			map[node->y * mapWidth + node->x] = WAY;
 		}
 		path.clear();
 	}
+	
+
+
+	//for (int roomNum = 0; roomNum < (int)allRooms.size()-1; ++roomNum)
+	//{
+	//	std::vector < std::shared_ptr<Node>> path;
+	//	int lCenterY=0;
+	//	int lCenterX=0;
+	//	int rCenterY=0;
+	//	int rCenterX=0;
+	//	// 왼쪽 노드의 중심 좌표와 오른쪽 노드 길 연결
+	//	if (node->leftNode->rect.position.x != node->rightNode->rect.position.x)
+	//	{
+	//		//위 아래
+	//		//왼쪽노드 하단 중간
+	//		lCenterY = allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height - 1;
+	//		lCenterX = allRooms[roomNum]->room.position.x + (allRooms[roomNum]->room.width / 2);
+	//		//오른쪽노드 상단 중간
+	//		rCenterY = allRooms[roomNum + 1]->room.position.y;
+	//		rCenterX = allRooms[roomNum + 1]->room.position.x + (allRooms[roomNum + 1]->room.width / 2);
+	//	}
+	//	else
+	//	{
+	//		//좌 우
+	//		//왼쪽노드 우측 중간
+	//		lCenterY = allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height / 2;
+	//		lCenterX = allRooms[roomNum]->room.position.x + allRooms[roomNum]->room.width - 2;
+	//		//오른쪽노드 좌측 중간
+	//		rCenterY = allRooms[roomNum + 1]->room.position.y + allRooms[roomNum + 1]->room.height / 2;
+	//		rCenterX = allRooms[roomNum + 1]->room.position.x;
+	//	}
+	//	
+	//	map[lCenterY * mapWidth + lCenterX] = 7;
+	//	map[rCenterY * mapWidth + rCenterX] = 7;
+	//	AStarPathfinder pathfinder(map, mapWidth, mapHeight, Vector2(lCenterX, lCenterY), Vector2(rCenterX, rCenterY), road, path);
+	//	for (auto& node : path)
+	//	{
+	//		map[node->y * mapWidth + node->x] = 7;
+	//	}
+	//	path.clear();
+	//}
 	
 	
 	
@@ -312,18 +461,24 @@ void DungeonMaker::SetRandomRoomType(int maxRoomCount)
 {
 	// Todo : 비율로 수정해야함
 
+	maxRoomCount -= MONSTER_BOSS_ROOMTYPE_COUNT - PLAYER_ROOMTYPE_COUNT;
+
 	//맵 숫
 	allRoomTypes.emplace_back(RoomType::Player);
 	allRoomTypes.emplace_back(RoomType::MonsterBoss);
-	for (int eliteMonsterRoomCount = 0; eliteMonsterRoomCount < MONSTER_ELITE_ROOMTYPE_COUNT; ++eliteMonsterRoomCount)
-	{
-		allRoomTypes.emplace_back(RoomType::MonsterElite);
-	}
-	for (int treasurechestRoomCount = 0; treasurechestRoomCount < TREASURECHEST_ROOMTYPE_COUNT; ++treasurechestRoomCount)
+	for (int treasurechestRoomCount = 0; treasurechestRoomCount < maxRoomCount * TREASURECHEST_ROOMTYPE_RATE; ++treasurechestRoomCount)
 	{
 		allRoomTypes.emplace_back(RoomType::Treasurechest);
 	}
-	for (int monsterRoomCount = 0; monsterRoomCount < maxRoomCount - MONSTER_ELITE_ROOMTYPE_COUNT - TREASURECHEST_ROOMTYPE_COUNT - MONSTER_BOSS_ROOMTYPE_COUNT - PLAYER_ROOMTYPE_COUNT; ++monsterRoomCount)
+	maxRoomCount = maxRoomCount - maxRoomCount * TREASURECHEST_ROOMTYPE_RATE;
+
+	for (int eliteMonsterRoomCount = 0; eliteMonsterRoomCount < maxRoomCount * MONSTER_ELITE_ROOMTYPE_RATE; ++eliteMonsterRoomCount)
+	{
+		allRoomTypes.emplace_back(RoomType::MonsterElite);
+	}
+	maxRoomCount = maxRoomCount - maxRoomCount * MONSTER_ELITE_ROOMTYPE_RATE;
+
+	for (int monsterRoomCount = 0; monsterRoomCount < maxRoomCount; ++monsterRoomCount)
 	{
 		allRoomTypes.emplace_back(RoomType::Monster);
 	}
@@ -405,4 +560,7 @@ void DungeonMaker::PrintMap()
 	}
 }
 
-
+bool Compare(std::pair<Vector2, int> a, std::pair<Vector2, int> b)
+{
+	return a.second < b.second;
+}

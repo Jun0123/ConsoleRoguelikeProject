@@ -21,10 +21,10 @@ int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	
-	//Game game;
-	//game.Run();
+	Game game;
+	game.Run();
 
-	DungeonMaker dungeonSet(200, 50, 0.4f, 0.7f, 3);
+	//DungeonMaker dungeonSet(200, 50, 0.4f, 0.7f, 3);
 
     /*int* grid = new int[9*10];
     

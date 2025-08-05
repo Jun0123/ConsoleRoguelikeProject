@@ -5,11 +5,6 @@
 #include <unordered_map>
 #include <iostream>
 
-#ifdef _DEBUG
-#define new new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#else
-#define new new
-#endif
 
 Node::Node(int x, int y, std::shared_ptr<Node> parent)
     : x(x), y(y), g(0), h(0), f(0),parent(parent)
@@ -17,7 +12,7 @@ Node::Node(int x, int y, std::shared_ptr<Node> parent)
     
 }
 
-AStarPathfinder::AStarPathfinder(int*& map, int sizeX, int sizeY, Vector2 startPosition, Vector2 endPosition, std::vector<char> road, std::vector < std::shared_ptr<Node>>& outPath)
+AStarPathfinder::AStarPathfinder(char*& map, int sizeX, int sizeY, Vector2 startPosition, Vector2 endPosition, std::vector<char> road, std::vector < std::shared_ptr<Node>>& outPath)
     : gridSizeX(sizeX), gridSizeY(sizeY), road(road)
 {
     start = std::make_shared<Node>(startPosition.x, startPosition.y);

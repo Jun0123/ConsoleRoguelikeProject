@@ -23,12 +23,20 @@ struct DirectionMap
 };
 
 
+bool Compare(std::pair<Vector2, int> a, std::pair<Vector2, int> b);
+
+
 class DungeonMaker
 {
 public:
 	// 맵 크기 , 방 분할 최소/최대 비율
 	DungeonMaker(int inMapWidth, int inMapHeight, float inMinRatio, float inMaxRatio, int inMaxDepth);
+	DungeonMaker(char*& map, int inMapWidth, int inMapHeight, float inMinRatio, float inMaxRatio, int inMaxDepth);
 	~DungeonMaker();
+
+	//방정보 넘기기
+	void GetAllRoomTypes(std::vector<RoomType>& outRoomTypes);
+	void GetAllRooms(std::vector<RoomNode>& outRooms);
 private:
 	// 맵 분할 함수 : 구역 나누기
 	void DivideMap(RoomNode* node, int depth);
@@ -39,7 +47,8 @@ private:
 
 	//방만들기
 	void MakeRoom(RoomNode* node);
-
+	
+	
 	//길만들기
 	// 
 	void MakeRoad(const RoomNode* node);
@@ -58,7 +67,7 @@ private:
 	int mapWidth;
 	int mapHeight;
 	int maxDepth = 0;
-	int* map = nullptr;
+	char* map = nullptr;
 	RoomNode* rootNode = nullptr;
 	int roomIdx = 0;
 	std::vector<RoomType> allRoomTypes;
