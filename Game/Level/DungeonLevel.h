@@ -11,6 +11,8 @@
 * [x] 게임 판정: 플레이어가 죽으면 게임 종료.
 */
 
+enum class RoomType : unsigned char;
+
 class DungeonLevel : public Level
 {
 	RTTI_DECLARATIONS(DungeonLevel, Level)

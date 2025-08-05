@@ -1,7 +1,7 @@
 #pragma once
 #include "Math/Vector2.h"
 
-enum class RoomType
+enum class RoomType : unsigned char
 {
 	Monster,
 	MonsterElite,

@@ -24,7 +24,7 @@
 #define TREASURECHEST_ROOMTYPE_RATE 0.167
 #define PLAYER_ROOMTYPE_COUNT 1
 #define WAY '#'
-#define INSIDE '_'
+#define INSIDE '+'
 #define OUTSIDE '\0'
 
 /*
@@ -220,18 +220,11 @@ void DungeonMaker::GetAllRooms(std::vector<RoomNode>& outRooms)
 }
 
 
-
+//left 노드의 edge와 right노드의 중심을 비교하여 가까운 방향을 시작지점
+//길생성 방향과 right노드의 edge 중 가까운 것에 끝지점
+//시작과 끝지점을 A*알고리즘으로 이어줌
 void DungeonMaker::MakeRoad(const RoomNode* node)
 {
-	/* Todo :
-	문제 1 : 상위 노드에서 길을 만들 경우 중간에 방을 뚫고 길을 만든다.
-        A*알고리즘->player추적에도 사용할 것이므로 재활용할 수 있게 만들기
-        반목문 - allRooms 다음 idx를 A*알고리즘으로 길 연결
-	문제 2: 보스Room을 안거치고 모든 길을 어떻게 연결하는가?
-        방법 1 :1 - 2 - 3 - 4 - 5 - 6 과 같이 일자형으로 구현하는 방법, 6에 보스방
-        방법 2 : ex) 보스가 i번방이라면 i-1과 i+1을 연결
-	*/
-
 	std::vector<char> road;
 	road.emplace_back(OUTSIDE);
 	road.emplace_back(WAY);
@@ -308,11 +301,9 @@ void DungeonMaker::MakeRoad(const RoomNode* node)
 		edges.push_back({ upLeftEdge2, mapWidth * mapHeight });
 
 
-		
-
 		for (auto& edge : edges)
 		{
-			int distance = std::abs(allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height/2 - edge.first.y) + std::abs(allRooms[roomNum]->room.position.x + allRooms[roomNum]->room.width/2 - edge.first.x);
+			int distance = std::abs(lCenterY - edge.first.y) + std::abs(lCenterX - edge.first.x);
 			edge.second = distance;
 		}
 
@@ -470,13 +461,13 @@ void DungeonMaker::SetRandomRoomType(int maxRoomCount)
 	{
 		allRoomTypes.emplace_back(RoomType::Treasurechest);
 	}
-	maxRoomCount = maxRoomCount - maxRoomCount * TREASURECHEST_ROOMTYPE_RATE;
+	maxRoomCount = maxRoomCount - static_cast<int>(maxRoomCount * TREASURECHEST_ROOMTYPE_RATE);
 
 	for (int eliteMonsterRoomCount = 0; eliteMonsterRoomCount < maxRoomCount * MONSTER_ELITE_ROOMTYPE_RATE; ++eliteMonsterRoomCount)
 	{
 		allRoomTypes.emplace_back(RoomType::MonsterElite);
 	}
-	maxRoomCount = maxRoomCount - maxRoomCount * MONSTER_ELITE_ROOMTYPE_RATE;
+	maxRoomCount = maxRoomCount - static_cast<int>(maxRoomCount * MONSTER_ELITE_ROOMTYPE_RATE);
 
 	for (int monsterRoomCount = 0; monsterRoomCount < maxRoomCount; ++monsterRoomCount)
 	{

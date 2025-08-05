@@ -11,7 +11,6 @@
 
 // 델리게이트에서 사용할 함수 포인터 타입 선언.
 using Function = void(*)(void*);
-//함수선언 = (반환형) (함수인스턴스, 매개변수)
 using FunctionPosition = void(*)(void* ,int x,int y);
 
 // 델리게이트 클래스.
@@ -30,7 +29,7 @@ struct Engine_API Delegate
 		: instance(instance), function(function)
 	{
 	}
-	// 인스턴스 및 델리게이트 함수 등록
+
 	Delegate(void* const instance, FunctionPosition function)
 		: instance(instance), functionPosition(function)
 	{
@@ -65,7 +64,6 @@ struct Engine_API Delegate
 	{
 		Invoke();
 	}
-	// 등록된 델리게이트 실행
 	void operator()(int x, int y)
 	{
 		Invoke(x,y);

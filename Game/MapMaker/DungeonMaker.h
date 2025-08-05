@@ -7,22 +7,6 @@
 	 https://nowitzki.tistory.com/10 
 */
 
-
-
-enum class Direction
-{
-	Left = 0,
-	Right,
-	Up,
-	Down
-};
-
-struct DirectionMap
-{
-	Direction arr[4] = { Direction::Left,Direction::Right,Direction::Up,Direction::Down };
-};
-
-
 bool Compare(std::pair<Vector2, int> a, std::pair<Vector2, int> b);
 
 
