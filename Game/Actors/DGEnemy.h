@@ -19,7 +19,7 @@ public:
 	DGEnemy(
 		const char* image = "",
 		Color color = Color::White,
-		const Vector2& position = Vector2::Zero
+		const Vector2& position = Vector2::Zero, const Vector2& mapPosition = Vector2::Zero, int findTargetDistance = 10, int attackDistance = 1
 		);
 	virtual void Tick(float deltaTime) override;
 
@@ -27,12 +27,12 @@ public:
 
 	void Idle();
 	void RandomMove();
-	void FindTarget();
+	bool FindTarget();
 	void TrackingTarget();
 	void AttackTarget();
 	
 
-	void GetDistanceToTarget();
+	int GetDistanceToTarget();
 	
 	
 	//어떻게 턴을 소모할 것인가?> 이동 카운트 및 공격 카운트를 전부 소모하면 턴종료
@@ -44,8 +44,10 @@ public:
 	
 
 protected:
-	int targetFindDistance;
+	Vector2 mapPosition;
 	EnemyState currentState;
 	DGCharacter* target;
+	int findTargetDistance;
+	int attackDistance;
 };
 

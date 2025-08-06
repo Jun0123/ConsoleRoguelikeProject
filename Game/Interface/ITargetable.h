@@ -10,4 +10,5 @@ public:
 	virtual bool CanFindPlayer(DGCharacter*& playerCharacter) = 0;
 	virtual Vector2 GetPositionWindowToMap(Vector2 inScreenPosition) = 0;
 	virtual Vector2 GetPositionMapToWindow(Vector2 inWindowPosition) = 0;
+	virtual std::vector<Vector2> GetFindPathToTarget(Vector2 startMapPosition, DGCharacter* target) = 0;
 };

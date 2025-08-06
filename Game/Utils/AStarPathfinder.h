@@ -9,8 +9,10 @@ struct Node {
     int x, y;
     int g, h, f;
     std::weak_ptr<Node> parent;
+    Node* parent2;
 
     Node(int x, int y, std::shared_ptr<Node> parent = nullptr);
+    Node(int x, int y, Node* parent2,int i);
     ~Node()
     {
     }
@@ -31,6 +33,16 @@ struct NodePtrHash {
     }
 };
 
+struct NodePointerHash {
+    // std::unordered_set은 C++의 해시 테이블 기반 컨테이너
+    // 이미 방문한 노드(닫힌 목록, closedList)를 기록할 때
+    // n의 메모리 주소 대신, n이 가리키는 x와 y 좌표를 사용해 해시 값을 만든다.
+    // nodeA와 nodeB는 비록 메모리 주소는 달라도, (x, y) 좌표가 같으므로 같은 해시 값을 갖게 됨
+    std::size_t operator()(const Node* n) const {
+        return std::hash<int>()(n->x) ^ ((std::hash<int>()(n->y) << 1));
+    }
+};
+
 struct NodePtrEqual {
     // 노드가 같은 좌표를 가르키는지 비교
     bool operator()(const std::shared_ptr<Node> a, const std::shared_ptr<Node> b) const {
@@ -38,11 +50,20 @@ struct NodePtrEqual {
     }
 };
 
+struct NodePointerEqual {
+    // 노드가 같은 좌표를 가르키는지 비교
+    bool operator()(const Node* a, const Node* b) const {
+        return a->x == b->x && a->y == b->y;
+    }
+};
+
+
 class AStarPathfinder
 {
 public:
     // 맵 포인터, 맵 사이즈, 시작위치, 끝 위치,이동 가능한 문자,구할 경로
     AStarPathfinder(char*& map, int sizeX, int sizeY, Vector2 startPosition, Vector2 endPosition, std::vector<char> road , std::vector < std::shared_ptr<Node>>& outPath);
+    AStarPathfinder(char*& map, int sizeX, int sizeY, Vector2 startPosition, Vector2 endPosition, std::vector<char> road, std::vector <Vector2>& outPath);
     ~AStarPathfinder();
 private:
     // 최적의 경로를 예측하는 기준 f(n) = g(n) + h(n)
@@ -50,23 +71,27 @@ private:
     // 대각선은 이동하지 않아서 맨해튼 거리로 계산
     // 맨해튼 거리: x좌표 차이의 절댓값 + y좌표 차이의 절댓값
     int heuristic(std::weak_ptr<Node> a, std::weak_ptr<Node> b);
-
+    int heuristic2(Node* a, Node* b);
     //node에 인접한 노드를 생성
     std::vector<std::shared_ptr<Node>> getNeighbors(const std::shared_ptr<Node> node);
+    std::vector<Node*> getNeighbors2(Node* node);
 
     //목표지점에 도착했을 때 경로를 전달하는 함수
     std::vector<std::shared_ptr<Node>> reconstructPath(std::shared_ptr<Node> endNode);
-
+    std::vector<Vector2> reconstructPath(Node* endNode);
 public:
     std::vector<std::shared_ptr<Node>> findPath(std::weak_ptr<Node> start, std::weak_ptr<Node> end);
-
+    std::vector<Vector2> findPath(Node* start, Node* end);
 private:
     // 방문한 노드 , 중복값 방지 NodePtrHash
     std::unordered_set<std::shared_ptr<Node>, NodePtrHash, NodePtrEqual> closedList;
+    std::unordered_set<Node*, NodePointerHash, NodePointerEqual> closedList2;
     const char* grid = nullptr;
     int gridSizeX = 0;
     int gridSizeY = 0;
     std::shared_ptr<Node> start = nullptr;
     std::shared_ptr<Node> end = nullptr;
+    Node* start2 = nullptr;
+    Node* end2 = nullptr;
     std::vector<char> road;
 };

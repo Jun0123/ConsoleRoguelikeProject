@@ -1,8 +1,8 @@
 #include "DGEnemy.h"
 #include "Level/DungeonLevel.h"
 
-DGEnemy::DGEnemy(const char* image, Color color, const Vector2& position)
-	: DGCharacter(image,color,position)
+DGEnemy::DGEnemy(const char* image, Color color, const Vector2& windowPosition, const Vector2& mapPosition, int findTargetDistance,int attackDistance)
+	: DGCharacter(image,color, windowPosition), mapPosition(mapPosition),findTargetDistance(findTargetDistance), attackDistance(attackDistance)
 {
 	currentState = EnemyState::Idle;
 }
@@ -10,6 +10,7 @@ DGEnemy::DGEnemy(const char* image, Color color, const Vector2& position)
 void DGEnemy::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
+	TrackingTarget();
 }
 
 void DGEnemy::SetState(EnemyState inState)
@@ -40,17 +41,36 @@ void DGEnemy::RandomMove()
 {
 }
 
-void DGEnemy::FindTarget()
+bool DGEnemy::FindTarget()
 {
 	if (target != nullptr)
 	{
-		return;
+		return false;
 	}
-	GetDistanceToTarget();
+	int distance = GetDistanceToTarget();
+
+	if (distance > findTargetDistance )
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void DGEnemy::TrackingTarget()
 {
+	if (GetDistanceToTarget() <= attackDistance)
+	{
+		SetState(EnemyState::AttackTarget);
+		return;
+	}
+
+	ITargetable* targetable = dynamic_cast<ITargetable*>(owner);
+	if (targetable != nullptr && targetable->CanFindPlayer(target))
+	{
+		std::vector<Vector2> path = targetable->GetFindPathToTarget(mapPosition, target);
+
+	}
 }
 
 void DGEnemy::AttackTarget()
@@ -58,14 +78,17 @@ void DGEnemy::AttackTarget()
 
 }
 //플레이어와 거리가 멀다면 비활성화 
-void DGEnemy::GetDistanceToTarget()
+int DGEnemy::GetDistanceToTarget()
 {
 	Vector2 playerWindowPosition(-1, -1);
 	ITargetable* targetable = dynamic_cast<ITargetable*>(owner);
-	if (targetable->CanFindPlayer(target))
+	if (targetable != nullptr && targetable->CanFindPlayer(target))
 	{
-		
+		Vector2 playerMapPosition = targetable->GetPositionWindowToMap(target->Position());
+		return std::abs(playerMapPosition.x - mapPosition.x) + std::abs(playerMapPosition.y - mapPosition.y);
 	}
+
+	return findTargetDistance + 1;
 }
 
 void DGEnemy::UseTurn()
@@ -82,7 +105,10 @@ void DGEnemy::UseTurn()
 		// 2순위 : 타겟 공격
 		// 3순위 : 타겟 추격
 		// 4순위 : 이동 할지 가만히 있을지 랜덤 결정
-		FindTarget();
+		if (FindTarget())
+		{
+			SetState(EnemyState::TrackingTarget);
+		}
 
 	}
 }

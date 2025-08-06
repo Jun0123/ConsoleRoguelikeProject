@@ -343,6 +343,8 @@ void DungeonMaker::MakeRoad(const RoomNode* node)
 			map[node->y * mapWidth + node->x] = WAY;
 		}
 		path.clear();
+
+		
 	}
 	
 

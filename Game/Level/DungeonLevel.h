@@ -27,6 +27,7 @@ public:
 	virtual bool CanFindPlayer(DGCharacter*& playerCharacter) override;
 	virtual Vector2 GetPositionWindowToMap(Vector2 inScreenPosition) override;
 	virtual Vector2 GetPositionMapToWindow(Vector2 inMapPosition) override;
+	virtual std::vector<Vector2> GetFindPathToTarget(Vector2 startMapPosition, DGCharacter* target) override;
 private:
 	void SpawnPlayer();
 	void SpawnEnemies();

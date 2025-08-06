@@ -2,6 +2,8 @@
 #include "Engine.h"
 #include "MapMaker/DungeonMaker.h"
 #include "Actors/DGPlayer.h"
+#include "Utils/AStarPathfinder.h"
+#include "Actors/DGEnemy.h"
 
 #define MAPSIZEX 100
 #define MAPSIZEY 50
@@ -21,6 +23,11 @@ DungeonLevel::DungeonLevel()
 	{
 		player->TestEvent<DungeonLevel, &DungeonLevel::CanMoveActor>(this);
 	}
+	Vector2 position = player->Position() + Vector2(2,2);
+	Vector2 mapposition = mapWindow.GetPositionWindowToMap(position);
+	
+	AddActor(new DGEnemy("E",Color::Red, position, mapposition));
+
 	
 }
 
@@ -82,6 +89,18 @@ Vector2 DungeonLevel::GetPositionWindowToMap(Vector2 inScreenPosition)
 Vector2 DungeonLevel::GetPositionMapToWindow(Vector2 inMapPosition)
 {
 	return mapWindow.GetPositionMapToWindow(inMapPosition);
+}
+
+std::vector<Vector2> DungeonLevel::GetFindPathToTarget(Vector2 startMapPosition, DGCharacter* target)
+{
+	std::vector<Vector2> path;
+	std::vector<char> road;
+	road.emplace_back('#');
+	road.emplace_back('+');
+	Vector2 targetPosition = mapWindow.GetPositionWindowToMap(target->Position());
+	AStarPathfinder pathfinder2(map, MAPSIZEX, MAPSIZEY, startMapPosition, targetPosition, road, path);
+	
+	return path;
 }
 
 //플레이어 방 타입을 찾고 해당 방 중심에 플레이어를 스폰
@@ -163,6 +182,8 @@ void DungeonLevel::LoadMap()
 
 void DungeonLevel::CanMoveActor(int x, int y)
 {
+	//Todo : 몬스터와 겹치는지 검사
+
 	// 스크린화면 좌표로 비교할때
 	Vector2 moveToPosition(x, y);
 	Vector2 dir = moveToPosition - player->Position();
