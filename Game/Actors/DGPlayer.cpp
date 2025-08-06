@@ -2,12 +2,11 @@
 #include "Input.h"
 
 DGPlayer::DGPlayer(Vector2 position)
-	:Actor("P",Color::Green,position)
+	:DGCharacter("P",Color::Green,position)
 {
 	// keydown 콜백 등록.
 	
 }
-
 void DGPlayer::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);

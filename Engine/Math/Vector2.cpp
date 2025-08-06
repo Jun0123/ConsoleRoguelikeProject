@@ -67,3 +67,4 @@ const char* Vector2::ToString()
     sprintf_s(value, 1024, "(%d, %d)", x, y);
     return value;
 }
+

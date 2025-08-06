@@ -8,4 +8,5 @@ enum class Color : int
 	Red = 4,
 	White = Red | Green | Blue,
 	Intensity = 8,
+	WhiteBackground = 255,
 };

@@ -451,25 +451,26 @@ void DungeonMaker::MakeVerticalRoad(const RoomNode* node)
 void DungeonMaker::SetRandomRoomType(int maxRoomCount)
 {
 	// Todo : 비율로 수정해야함
-
+	int makedRoomCount = 0;
 	maxRoomCount -= MONSTER_BOSS_ROOMTYPE_COUNT - PLAYER_ROOMTYPE_COUNT;
 
 	//맵 숫
 	allRoomTypes.emplace_back(RoomType::Player);
+	++makedRoomCount;
 	allRoomTypes.emplace_back(RoomType::MonsterBoss);
+	++makedRoomCount;
 	for (int treasurechestRoomCount = 0; treasurechestRoomCount < maxRoomCount * TREASURECHEST_ROOMTYPE_RATE; ++treasurechestRoomCount)
 	{
 		allRoomTypes.emplace_back(RoomType::Treasurechest);
+		++makedRoomCount;
 	}
-	maxRoomCount = maxRoomCount - static_cast<int>(maxRoomCount * TREASURECHEST_ROOMTYPE_RATE);
-
 	for (int eliteMonsterRoomCount = 0; eliteMonsterRoomCount < maxRoomCount * MONSTER_ELITE_ROOMTYPE_RATE; ++eliteMonsterRoomCount)
 	{
 		allRoomTypes.emplace_back(RoomType::MonsterElite);
+		++makedRoomCount;
 	}
-	maxRoomCount = maxRoomCount - static_cast<int>(maxRoomCount * MONSTER_ELITE_ROOMTYPE_RATE);
 
-	for (int monsterRoomCount = 0; monsterRoomCount < maxRoomCount; ++monsterRoomCount)
+	for (int monsterRoomCount = 0; monsterRoomCount < maxRoomCount- makedRoomCount; ++monsterRoomCount)
 	{
 		allRoomTypes.emplace_back(RoomType::Monster);
 	}

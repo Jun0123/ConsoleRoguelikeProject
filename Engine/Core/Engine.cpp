@@ -156,11 +156,9 @@ void Engine::Run()
 	);
 }
 
-
-
 void Engine::WriteToBuffer(
 	const Vector2& position, 
-	const char* image, 
+	const char* image,
 	Color color, 
 	int sortingOrder)
 {
@@ -253,7 +251,7 @@ void Engine::WriteToBuffer(
 	}
 }
 
-void Engine::WriteToValue(const Vector2& position, char image, Color color, int sortingOrder)
+void Engine::WriteValueToBuffer(const Vector2& position, char image, Color color, int sortingOrder)
 {
 	// @Incomplete: 화면 벗어난 글자만 빼는 로직 작성중.
 	// 화면 오른쪽으로 벗어나는지 확인.

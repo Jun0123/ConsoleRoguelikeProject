@@ -25,6 +25,7 @@ public:
 	static Vector2 Up;
 	static Vector2 Right;
 
+
 public:
 	// X/Y ÁÂÇ¥.
 	int x = 0;

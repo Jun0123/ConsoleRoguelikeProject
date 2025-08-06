@@ -1,11 +1,11 @@
 #pragma once
-#include "Actor\Actor.h"
+#include "DGCharacter.h"
 #include "Delegate.h"
 #include <vector>
 
-class DGPlayer :  public Actor
+class DGPlayer :  public DGCharacter
 {
-	RTTI_DECLARATIONS(DGPlayer, Actor)
+	RTTI_DECLARATIONS(DGPlayer, DGCharacter)
 public:
 	DGPlayer(Vector2 position);
 

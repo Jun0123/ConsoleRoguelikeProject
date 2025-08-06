@@ -163,6 +163,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Actors\DGCharacter.cpp" />
+    <ClCompile Include="Actors\DGEnemy.cpp" />
     <ClCompile Include="Actor\Enemy.cpp" />
     <ClCompile Include="Actor\EnemyBullet.cpp" />
     <ClCompile Include="Actor\EnemyDestroyEffect.cpp" />
@@ -182,8 +184,12 @@
     <ClCompile Include="MapMaker\MonsterElite.cpp" />
     <ClCompile Include="Utils\AStarPathfinder.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
+    <ClCompile Include="Window\DGMapWindow.cpp" />
+    <ClCompile Include="Window\DGWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actors\DGCharacter.h" />
+    <ClInclude Include="Actors\DGEnemy.h" />
     <ClInclude Include="Actors\DungeonMap.h" />
     <ClInclude Include="Actor\Enemy.h" />
     <ClInclude Include="Actor\EnemyBullet.h" />
@@ -191,6 +197,7 @@
     <ClInclude Include="Actor\Player.h" />
     <ClInclude Include="Actor\PlayerBullet.h" />
     <ClInclude Include="Actors\DGPlayer.h" />
+    <ClInclude Include="Interface\ITargetable.h" />
     <ClInclude Include="Level\DungeonLevel.h" />
     <ClInclude Include="MapMaker\DungeonMaker.h" />
     <ClInclude Include="Game\Game.h" />
@@ -203,6 +210,8 @@
     <ClInclude Include="MapMaker\MonsterElite.h" />
     <ClInclude Include="Utils\AStarPathfinder.h" />
     <ClInclude Include="Utils\Timer.h" />
+    <ClInclude Include="Window\DGMapWindow.h" />
+    <ClInclude Include="Window\DGWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
