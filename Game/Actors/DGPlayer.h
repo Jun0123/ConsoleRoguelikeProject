@@ -7,10 +7,10 @@ class DGPlayer :  public DGCharacter
 {
 	RTTI_DECLARATIONS(DGPlayer, DGCharacter)
 public:
-	DGPlayer(Vector2 position);
+	DGPlayer(Vector2 positio , DGCharacterAbility ability);
 
 	virtual void Tick(float deltaTime) override;
-
+	virtual void TakeDamage(DGCharacter* attacker, int damage);
 	// 키 눌림 이벤트에 리스너 함수를 등록할 때 사용할 함수.
 	template<typename T, void (T::* Method)(int ,int)>
 	void TestEvent(T* object)
@@ -40,6 +40,7 @@ public:
 
 	// 오른쪽 이동 함수.
 	void Move(int x, int y);
+	virtual void UseTurn() override;
 private:
 	//플레이어가 움직을 때 position값을 level에게 전달
 	

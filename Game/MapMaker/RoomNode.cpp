@@ -46,8 +46,8 @@ void RoomNode::SetActors()
 
 Rect& Rect::operator=(const Rect& inRect)
 {
-
 	position = inRect.position;
+
 	width = inRect.width;
 	height = inRect.height;
 

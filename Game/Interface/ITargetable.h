@@ -11,4 +11,8 @@ public:
 	virtual Vector2 GetPositionWindowToMap(Vector2 inScreenPosition) = 0;
 	virtual Vector2 GetPositionMapToWindow(Vector2 inWindowPosition) = 0;
 	virtual std::vector<Vector2> GetFindPathToTarget(Vector2 startMapPosition, DGCharacter* target) = 0;
+	//이동 가능한 위치인지
+	virtual bool CanMoveEnemy(DGCharacter* enmey, Vector2 moveToMapPosition,bool& bIsVisible) = 0;
+	//화면 안에 있는지
+	virtual bool InCameraEnemy(Vector2 enemyMapPosition)=0;
 };

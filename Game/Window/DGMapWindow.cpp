@@ -36,12 +36,13 @@ Vector2 DGMapWindow::GetPositionWindowToMap(Vector2 inWindowPosition)
 Vector2 DGMapWindow::GetPositionMapToWindow(Vector2 inMapPosition)
 {
 	//현재 window 위치 + 길이
-	
-	Vector2 currentPosition = (windowPosition + inMapPosition - imagePosition);
-	if (currentPosition.x < 0)
+	Vector2 size = inMapPosition - imagePosition;
+	Vector2 currentPosition = windowPosition + size;
+	//Vector2 currentPosition = (windowPosition + inMapPosition - imagePosition);
+	/*if (currentPosition.x < 0)
 		currentPosition.x = inMapPosition.x;
 	if (currentPosition.y < 0)
-		currentPosition.y = inMapPosition.y;
+		currentPosition.y = inMapPosition.y;*/
 
 	return  currentPosition;
 }

@@ -11,6 +11,7 @@
 * [x] 게임 판정: 플레이어가 죽으면 게임 종료.
 */
 
+
 enum class RoomType : unsigned char;
 
 class DungeonLevel : public Level, public ITargetable
@@ -28,18 +29,22 @@ public:
 	virtual Vector2 GetPositionWindowToMap(Vector2 inScreenPosition) override;
 	virtual Vector2 GetPositionMapToWindow(Vector2 inMapPosition) override;
 	virtual std::vector<Vector2> GetFindPathToTarget(Vector2 startMapPosition, DGCharacter* target) override;
+	virtual bool CanMoveEnemy(DGCharacter* enmey, Vector2 moveToMapPosition, bool& bIsVisible) override;
+	virtual bool InCameraEnemy(Vector2 enemyMapPosition);
+	
 private:
 	void SpawnPlayer();
 	void SpawnEnemies();
 	void LoadMap();
-	void CanMoveActor(int x,int y);
-
+	void CanMovePlayer(int x,int y);
+	
 private:
 	std::vector< enum class RoomType> allRoomTypes;
 	std::vector< class RoomNode> allRooms;
 	char* map=nullptr;
 	class DGPlayer* player = nullptr;
 	DGMapWindow mapWindow;
-	//Vector2 
-	//Vector2 cameraPosition;
+	int currentTurnIdx = 0;
+
+	std::vector<DGCharacter*> turnList;
 };

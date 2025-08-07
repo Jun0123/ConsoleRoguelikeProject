@@ -4,6 +4,8 @@
 #include "Actors/DGPlayer.h"
 #include "Utils/AStarPathfinder.h"
 #include "Actors/DGEnemy.h"
+#include "Utils/Utils.h"
+#include <algorithm>
 
 #define MAPSIZEX 100
 #define MAPSIZEY 50
@@ -11,6 +13,8 @@
 #define MAPWINDOWPOSITIONY 7
 #define MAPWINDOWSIZEX 80
 #define MAPWINDOWSIZEY 35
+
+
 
 DungeonLevel::DungeonLevel()
 {
@@ -21,14 +25,24 @@ DungeonLevel::DungeonLevel()
 
 	if (player != nullptr)
 	{
-		player->TestEvent<DungeonLevel, &DungeonLevel::CanMoveActor>(this);
+		player->TestEvent<DungeonLevel, &DungeonLevel::CanMovePlayer>(this);
 	}
-	Vector2 position = player->Position() + Vector2(2,2);
-	Vector2 mapposition = mapWindow.GetPositionWindowToMap(position);
 	
-	AddActor(new DGEnemy("E",Color::Red, position, mapposition));
+	
+	SpawnEnemies();
 
+	/*
 	
+	Vector2 position = player->Position() + Vector2(2, 2);
+	Vector2 mapposition = mapWindow.GetPositionWindowToMap(position);
+	DGCharacterAbility ability;
+	ability.moveMaxCount = 5;
+	ability.attackDistance = 1;
+	ability.attackDamage = 1;
+	ability.attackMaxCount = 1;
+	DGEnemy* e = new DGEnemy("E", Color::Red, position, mapposition, ability,this);
+	AddActor(e);
+	*/
 }
 
 DungeonLevel::~DungeonLevel()
@@ -45,6 +59,31 @@ void DungeonLevel::BeginPlay()
 void DungeonLevel::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
+
+	for (Actor* const actor : actors)
+	{
+		DGCharacter* character = dynamic_cast<DGCharacter*>(actor);
+		if (character != nullptr)
+		{
+			turnList.emplace_back(character);
+		}
+	}
+
+	if (turnList.size() < 1)
+		return;
+
+	std::sort(turnList.begin(), turnList.end(), [](const DGCharacter* a, const DGCharacter* b)
+		{
+			return a->ability.currentTurnPoint < b->ability.currentTurnPoint;
+		});
+
+	
+
+	turnList[0]->UseTurn();
+	
+
+
+	turnList.clear();
 }
 
 void DungeonLevel::Render()
@@ -103,6 +142,50 @@ std::vector<Vector2> DungeonLevel::GetFindPathToTarget(Vector2 startMapPosition,
 	return path;
 }
 
+bool DungeonLevel::CanMoveEnemy(DGCharacter* enmey, Vector2 moveToMapPosition, bool& bIsVisible)
+{
+	DGEnemy* dgEnemy = dynamic_cast<DGEnemy*>(enmey);
+	// 지도로 좌표 비교
+	if (map[moveToMapPosition.y * MAPSIZEX + moveToMapPosition.x] == 0)
+	{
+		//실패시 이동하지 않음
+		return false;
+	}
+
+	Vector2 windowPosition = mapWindow.GetWindowPosition();
+	Vector2 windowSize = mapWindow.GetWindowSize();
+	Vector2 cameraPosition = mapWindow.imagePosition;
+
+	//이동한 위치의 카메라 범위가 지도를 벗어난다면 화면상에서 보이지 않게 비활성화
+	//화면 벗어나는 경우
+	if (mapWindow.imagePosition.x + MAPWINDOWSIZEX-2 < moveToMapPosition.x ||
+		mapWindow.imagePosition.x+1 > moveToMapPosition.x ||
+		mapWindow.imagePosition.y + MAPWINDOWSIZEY-2 < moveToMapPosition.y ||
+		mapWindow.imagePosition.y+1 > moveToMapPosition.y+1)
+	{
+		bIsVisible = false;
+	}
+	
+
+	return true;
+}
+
+bool DungeonLevel::InCameraEnemy(Vector2 enemyMapPosition)
+{
+	//화면 벗어나는 경우
+	if (mapWindow.imagePosition.x + MAPWINDOWSIZEX-2 < enemyMapPosition.x ||
+		mapWindow.imagePosition.x + 1 > enemyMapPosition.x ||
+		mapWindow.imagePosition.y + MAPWINDOWSIZEY-2 < enemyMapPosition.y ||
+		mapWindow.imagePosition.y+1 > enemyMapPosition.y)
+	{
+		//비활성화 Enemy
+		return false;
+	}
+	return true;
+}
+
+
+
 //플레이어 방 타입을 찾고 해당 방 중심에 플레이어를 스폰
 void DungeonLevel::SpawnPlayer()
 {
@@ -159,13 +242,52 @@ void DungeonLevel::SpawnPlayer()
 	//mapWindow 설정
 	mapWindow.SetMapWindow(mapWindowPosition, mapWindowSize, cameraPosition, map, mapSize);
 	//맵의 플레이어 위치를 화면 위치로 변환하여 스폰
-	player = new DGPlayer(mapWindow.GetPositionMapToWindow(playerPositionOnMap));
+	DGCharacterAbility ability;
+	ability.moveMaxCount = 3;
+	ability.attackDistance = 1;
+	ability.attackDamage = 1;
+	ability.attackMaxCount = 1;
+	ability.currentHp = 1;
+	ability.currentTurnPoint = 1;
+	ability.sortTurnPoint = 1;
+	player = new DGPlayer(mapWindow.GetPositionMapToWindow(playerPositionOnMap), ability);
 	AddActor(player);
 }
 
 void DungeonLevel::SpawnEnemies()
 {
+	if (allRoomTypes.size() != allRooms.size())
+	{
+		//오류 생성된 방과 방타입의 수가 일치하지 않음
+		__debugbreak();
+		return;
+	}
+	//각 방마다 적 스폰
+	int turnPoint = 1;
+	for (size_t roomTypeIdx = 0; roomTypeIdx < allRoomTypes.size(); ++roomTypeIdx)
+	{
+		if (allRoomTypes[roomTypeIdx] != RoomType::Player)
+		{
+			Rect roomInfo = allRooms[roomTypeIdx].GetRoomInfo();
+		
+			int randomX = Utils::Random(roomInfo.position.x+1, roomInfo.position.x + roomInfo.width -2);
+			int randomY = Utils::Random(roomInfo.position.y+1, roomInfo.position.y + roomInfo.height -2);
+
+			DGCharacterAbility enemyAbility;
+			enemyAbility.moveMaxCount = 5;
+			enemyAbility.attackDistance = 1;
+			enemyAbility.attackDamage = 1;
+			enemyAbility.attackMaxCount = 1;
 	
+			// 1~n까지 턴 순서 적용
+			enemyAbility.sortTurnPoint = turnPoint;
+			enemyAbility.currentTurnPoint = ++turnPoint;
+		
+			Vector2 enemyWindowPosition(-1, -1);
+			Vector2 enemyMapPosition(randomX, randomY);
+			AddActor(new DGEnemy("E", Color::Red, enemyWindowPosition, enemyMapPosition, enemyAbility, this));
+		}
+	}
 }
 
 void DungeonLevel::LoadMap()
@@ -180,7 +302,7 @@ void DungeonLevel::LoadMap()
 
 }
 
-void DungeonLevel::CanMoveActor(int x, int y)
+void DungeonLevel::CanMovePlayer(int x, int y)
 {
 	//Todo : 몬스터와 겹치는지 검사
 

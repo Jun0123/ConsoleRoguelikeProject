@@ -124,10 +124,10 @@ std::vector<Vector2> AStarPathfinder::reconstructPath(Node* endNode)
         path.push_back(Vector2(currentNode->x,currentNode->y));
         currentNode = currentNode->parent2;
     }
-
     //시작위치->도착위치로 정렬
     std::reverse(path.begin(), path.end());
-
+    //도착지점 좌표 제거
+    path.pop_back();
     //for (auto* node : closedList)
     //{
     //    delete node;

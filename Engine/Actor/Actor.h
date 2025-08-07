@@ -100,4 +100,6 @@ protected:
 
 	// 소유 레벨(오너십).
 	Level* owner = nullptr;
+
+	bool isVisible = false;
 };

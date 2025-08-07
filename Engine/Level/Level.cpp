@@ -106,7 +106,7 @@ void Level::Render()
 	for (Actor* const actor : actors)
 	{
 		// 액터 처리 여부 확인.
-		if (!actor->isActive || actor->isExpired)
+		if (!actor->isActive || actor->isExpired || !actor->isVisible)
 		{
 			continue;
 		}
