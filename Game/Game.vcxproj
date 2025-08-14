@@ -183,6 +183,7 @@
     <ClCompile Include="MapMaker\TreasurechestRoom.cpp" />
     <ClCompile Include="MapMaker\MonsterElite.cpp" />
     <ClCompile Include="Utils\AStarPathfinder.cpp" />
+    <ClCompile Include="Utils\TestAStar.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
     <ClCompile Include="Window\DGMapWindow.cpp" />
     <ClCompile Include="Window\DGWindow.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="MapMaker\TreasurechestRoom.h" />
     <ClInclude Include="MapMaker\MonsterElite.h" />
     <ClInclude Include="Utils\AStarPathfinder.h" />
+    <ClInclude Include="Utils\TestAStar.h" />
     <ClInclude Include="Utils\Timer.h" />
     <ClInclude Include="Window\DGMapWindow.h" />
     <ClInclude Include="Window\DGWindow.h" />

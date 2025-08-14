@@ -84,7 +84,7 @@ public:
     std::vector<Vector2> findPath(Node* start, Node* end);
 private:
     // 방문한 노드 , 중복값 방지 NodePtrHash
-    std::unordered_set<std::shared_ptr<Node>, NodePtrHash, NodePtrEqual> closedList;
+    std::unordered_set<std::shared_ptr<Node>, NodePtrHash> closedList;
     std::unordered_set<Node*, NodePointerHash, NodePointerEqual> closedList2;
     const char* grid = nullptr;
     int gridSizeX = 0;

@@ -149,18 +149,21 @@ bool DGEnemy::FindTarget()
 
 void DGEnemy::TrackingTarget()
 {
+	//플레이어와의 거리 체크
 	int distance = GetDistanceToTarget();
+	//공격 사거리안에 플레이어가 있다면 멈춘 후 공격
 	if (distance <= ability.attackDistance)
 	{
 		EndMove();
 		return;
 	}
+	//탐색 사거리 밖에 있다면 랜덤이동
 	if (distance > findTargetDistance)
 	{
 		SetState(EnemyState::RandomMove);
 		return;
 	}
-
+	//플레이어를 찾을 수 있다면 레벨에 적의 지도좌표를 넘겨주고 경로를 가져오기
 	ITargetable* targetable = dynamic_cast<ITargetable*>(owner);
 	if (targetable != nullptr && (targetable->CanFindPlayer(target)))
 	{
@@ -171,6 +174,7 @@ void DGEnemy::TrackingTarget()
 		{
 			return;
 		}
+		//움직임 타이머 리셋
 		moveTimer.Reset();
 	}
 	else
@@ -243,6 +247,7 @@ void DGEnemy::AttackTarget()
 	if (ability.attackCurrentCount >= ability.attackMaxCount)
 	{
 		ability.attackCurrentCount = 0;
+		ability.moveCurrentCount = ability.moveMaxCount;
 		bOnAttack = false;
 	}
 }

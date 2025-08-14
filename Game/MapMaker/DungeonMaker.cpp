@@ -6,6 +6,7 @@
 #include "TreasurechestRoom.h"
 #include "PlayerRoom.h"
 #include "Utils/AStarPathfinder.h"
+#include "Utils/TestAStar.h"
 
 #include <iostream>
 #include <bits.h>
@@ -26,6 +27,12 @@
 #define WAY '#'
 #define INSIDE '+'
 #define OUTSIDE '\0'
+
+#ifdef _DEBUG
+#define new new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define new new
+#endif
 
 /*
 	Todo : 맵생성
@@ -225,13 +232,15 @@ void DungeonMaker::GetAllRooms(std::vector<RoomNode>& outRooms)
 //시작과 끝지점을 A*알고리즘으로 이어줌
 void DungeonMaker::MakeRoad(const RoomNode* node)
 {
+	//갈 수 있는 길 추가
 	std::vector<char> road;
 	road.emplace_back(OUTSIDE);
 	road.emplace_back(WAY);
 
+
+
 	
-	// 4방향 비교
-	// 각 중심비교
+	//모든 방 탐색
 	for (int roomNum = 0; roomNum < (int)allRooms.size() - 1; ++roomNum)
 	{
 		std::vector < std::shared_ptr<Node>> path;
@@ -240,7 +249,7 @@ void DungeonMaker::MakeRoad(const RoomNode* node)
 		int lCenterX = 0;
 		int rCenterY = 0;
 		int rCenterX = 0;
-
+		//비교를 위해 각 edge 좌표 저장
 		std::vector<std::pair<Vector2, int>> edges;
 		Vector2 downLeftEdge(allRooms[roomNum]->room.position.x, allRooms[roomNum]->room.position.y + allRooms[roomNum]->room.height);
 		edges.push_back({ downLeftEdge , mapWidth * mapHeight });
@@ -337,14 +346,22 @@ void DungeonMaker::MakeRoad(const RoomNode* node)
 
 		map[lCenterY * mapWidth + lCenterX] = WAY;
 		map[rCenterY * mapWidth + rCenterX] = WAY;
+		// A*알고리즘으로 경로 구하기
+		// 지도전체좌표, 지도너비, 지도높이, 시작위치(왼쪽노드), 끝 위치(오른쪽노드), 갈 수 있는 길, 구할 경로
 		AStarPathfinder pathfinder(map, mapWidth, mapHeight, Vector2(lCenterX, lCenterY), Vector2(rCenterX, rCenterY), road, path);
+		//지도에 길 그리기
 		for (auto& node : path)
 		{
-			map[node->y * mapWidth + node->x] = WAY;
+			//map[node->y * mapWidth + node->x] = WAY;
 		}
 		path.clear();
-
-		
+		std::vector < Vector2 > path2;
+		TestAStar pathTester(map, mapWidth, mapHeight, Vector2(lCenterX, lCenterY), Vector2(rCenterX, rCenterY), road, path2);
+		for (auto& point : path2)
+		{
+			map[point.y * mapWidth + point.x] = WAY;
+		}
+		path2.clear();
 	}
 	
 

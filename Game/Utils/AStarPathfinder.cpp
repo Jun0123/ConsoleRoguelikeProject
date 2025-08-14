@@ -7,7 +7,7 @@
 
 
 Node::Node(int x, int y, std::shared_ptr<Node> parent)
-    : x(x), y(y), g(0), h(0), f(0),parent(parent), parent2(parent2)
+    : x(x), y(y), g(0), h(0), f(0),parent(parent)
 {
     
 }
@@ -308,40 +308,6 @@ std::vector<Vector2> AStarPathfinder::findPath(Node* start, Node* end)
             }
             delete start2;
             delete end2;
-            /*while (!openList.empty())
-            {
-                Node* node = openList.top();
-                if (closedList2.count(node))
-                {
-                    closedList2.erase(node);
-                }
-                if (openMap.count(node))
-                {
-                    openMap.erase(node);
-                }
-                delete node;
-                openList.pop();
-            }
-
-
-            for (auto& d : openMap)
-            {
-                if (closedList2.count(d.first))
-                {
-                    closedList2.erase(d.first);
-                }
-                delete d.first;
-            }
-
-            for (auto& d : closedList2)
-            {
-                delete d;
-            }
-
-            
-            openMap.clear();*/
-
-            
             return v;
         }
 

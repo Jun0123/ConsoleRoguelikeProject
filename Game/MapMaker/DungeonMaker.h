@@ -3,7 +3,6 @@
 #include <vector>
 
 /*
-	 https://ajdxjdrnfld.tistory.com/4
 	 https://nowitzki.tistory.com/10 
 */
 

@@ -318,9 +318,11 @@ void DungeonLevel::CanMovePlayer(int x, int y)
 	{
 		return;
 	}
-
+	//화면 기준 좌표
 	Vector2 windowPosition = mapWindow.GetWindowPosition();
+	//화면의 길이
 	Vector2 windowSize = mapWindow.GetWindowSize();
+	//카메라가 이동할 위치
 	Vector2 cameraPosition = mapWindow.imagePosition + dir;
 
 	//이동한 위치의 카메라 범위가 지도를 벗어난다면 화면상에서 캐릭터 이동

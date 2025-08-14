@@ -27,22 +27,18 @@ void DGMapWindow::MoveCamera(Vector2 direction)
 	imagePosition.x += direction.x;
 	imagePosition.y += direction.y;
 }
-
+//화면->지도 좌표변환
 Vector2 DGMapWindow::GetPositionWindowToMap(Vector2 inWindowPosition)
 {
+	//화면기준 좌표로부터 임의 좌표의 길이 + 카메라 기준 좌표
 	return inWindowPosition - windowPosition + imagePosition;
 }
-
+//지도->화면 좌표변환
 Vector2 DGMapWindow::GetPositionMapToWindow(Vector2 inMapPosition)
 {
-	//현재 window 위치 + 길이
+	//길이 = 카메라에서의 임의 좌표 - 카메라 기준 좌표
 	Vector2 size = inMapPosition - imagePosition;
+	//화면 좌표 = 화면 기준 좌표 + 길이
 	Vector2 currentPosition = windowPosition + size;
-	//Vector2 currentPosition = (windowPosition + inMapPosition - imagePosition);
-	/*if (currentPosition.x < 0)
-		currentPosition.x = inMapPosition.x;
-	if (currentPosition.y < 0)
-		currentPosition.y = inMapPosition.y;*/
-
 	return  currentPosition;
 }
