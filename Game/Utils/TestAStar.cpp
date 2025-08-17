@@ -62,6 +62,7 @@ std::vector<TestNode*> TestAStar::getNeighbors2(TestNode* node)
                 if (grid[newY * gridSizeX + newX] == way)
                 {
                     neighbors.emplace_back(new TestNode(newX, newY, nullptr, 1));
+
                     break;
                 }
             }
@@ -140,16 +141,21 @@ std::vector<Vector2> TestAStar::findPath(TestNode* start, TestNode* end)
             while (!openList.empty())
             {
                 TestNode* node = openList.top();
-                if (closedList2.count(node))
+                openList.pop();
+                // Todo : 메모리 누수 원인
+                // 좌표가 같고 서로 다른 메모리 주소
+                // 커스텀 == 문을 쓰고 있기 때문에 좌표가 같은 경우 같은 객체로 취급하여
+                // 좌표값은 같고 메모리 주소가 다른 객체를 빼버렸고 그 객체는 접근할 수 없게되어 메모리 해제를 못하여 메모리 누수가 발생했다.
+                /*if (closedList2.count(node))
                 {
                     closedList2.erase(node);
-                }
+                }*/
                 if (openMap.count(node))
                 {
                     openMap.erase(node);
                 }
                 delete node;
-                openList.pop();
+                
             }
 
 
@@ -179,15 +185,14 @@ std::vector<Vector2> TestAStar::findPath(TestNode* start, TestNode* end)
         openMap.erase(current);
         
         //auto result = closedList2.insert(current);
-  
-        //커스텀 == 쓸경우
-        //같은 좌표일때는 closedList2에 삽입 실패 후 if (1)
-        //다른 좌표일때 삽입 실패 
-        if (closedList2.count(current))
-        {
-            delete current;
-            continue;
-        }
+      /*  TestNode* newNode1 = new TestNode(73, 15, nullptr, 1);
+        closedList2.insert(newNode1);
+        TestNode* newNode2 = new TestNode(72, 15, nullptr, 1);
+        closedList2.insert(newNode2);
+        TestNode* newNode3 = new TestNode(74, 15, nullptr, 1);
+        closedList2.insert(newNode3);*/
+      
+     
    
         //해쉬 값이 같아도 최종적으로 좌표를 == 판정을 하여 false값이 나옴 다른 것으로 판단하여 추가함
 
@@ -202,13 +207,17 @@ std::vector<Vector2> TestAStar::findPath(TestNode* start, TestNode* end)
         
         std::vector<TestNode*> neighbors = getNeighbors2(current);
 
-        for (TestNode*& neighbor : neighbors)
+        for (TestNode* neighbor : neighbors)
         {
             trash.insert(neighbor);
             //set<>.count() = 내부에 있는 데이터 개수를 리턴
             //중복된 값이 있으면 노드 삭제
 
-            if (closedList2.count(neighbor))
+            //if (closedList2.count(neighbor))
+            //커스텀 == 쓸경우
+            //같은 좌표일때는 closedList2에 삽입 실패 후 if (1)
+            //다른 좌표일때 삽입 실패 
+            if(closedList2.count(neighbor))
             {
                 trash.erase(neighbor);
                 delete neighbor;
